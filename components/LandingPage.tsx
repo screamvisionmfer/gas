@@ -1,6 +1,6 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Sites serves bundled artwork directly. */
 
-import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRef, useState } from "react";
 import { getFeaturedRecruits } from "@/lib/nft-metadata";
@@ -23,7 +23,7 @@ function Header() {
     <header className="site-header">
       <div className="header-inner">
         <a href="#top" className="brand" aria-label="Groypers Alpha Squadron home">
-          <Image src="/logo.png" alt="GAS logo" width={72} height={72} priority />
+          <img src="/logo.png" alt="GAS logo" width="72" height="72" fetchPriority="high" />
           <span><strong>GROYPERS</strong><b>ALPHA SQUADRON</b></span>
         </a>
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -89,7 +89,7 @@ function Hero() {
         <motion.div className="hero-art" initial={reduce ? false : { opacity: 0, scale: 0.88, rotate: 2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}>
           <div className="aircraft aircraft-one">✈</div><div className="aircraft aircraft-two">✈</div>
           <div className="logo-halo" />
-          <Image src="/logo.png" alt="Groypers Alpha Squadron military badge" width={760} height={760} priority />
+          <img src="/logo.png" alt="Groypers Alpha Squadron military badge" width="760" height="760" fetchPriority="high" />
           <span className="classified-stamp">CLASSIFIED<br />ALPHA UNIT</span>
         </motion.div>
       </div>
@@ -124,7 +124,7 @@ function AboutCollection() {
       <p>The squadron does not replace the token. <strong>It gives the token an army.</strong></p>
       <div className="field-folder" aria-hidden="true">
         <span className="folder-tab">GAS / FIELD FILE</span>
-        <div className="folder-paper"><Image src="/logo.png" width={140} height={140} alt="" /><b>IDENTITY<br />OPERATION</b><small>777 PERSONNEL</small></div>
+        <div className="folder-paper"><img src="/logo.png" width="140" height="140" alt="" /><b>IDENTITY<br />OPERATION</b><small>777 PERSONNEL</small></div>
       </div>
     </section>
   );
@@ -187,7 +187,7 @@ function Footer() {
   return (
     <footer className="site-footer" id="faq">
       <div className="footer-grid">
-        <div className="footer-brand"><Image src="/logo.png" width={74} height={74} alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
+        <div className="footer-brand"><img src="/logo.png" width="74" height="74" alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
         <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
         <div><h3>RESOURCES</h3><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
         <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / {siteConfig.creatorName}</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}<p>Creator: {siteConfig.creatorName}</p></div>

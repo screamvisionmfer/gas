@@ -1,6 +1,6 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Sites serves bundled artwork directly. */
 
-import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -61,7 +61,7 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
         <div className="rank-reveal-stage">
           <motion.div className="rank-emblem" initial={reduce ? false : { opacity: 0, scale: 0.35, rotate: -12 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 150, damping: 14, delay: 0.48 }}>
             <span className="rank-emblem-ring" />
-            <Image src={result.rank.image} width={270} height={270} alt={`${result.rank.name} insignia`} priority />
+            <img src={result.rank.image} width="270" height="270" alt={`${result.rank.name} insignia`} fetchPriority="high" />
           </motion.div>
           <motion.div className="rank-reveal-copy" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.72, duration: 0.45 }}>
             <small>{hasRecruits ? "NEW SQUADRON CLASSIFICATION" : "SQUADRON STATUS"}</small>
@@ -87,7 +87,7 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
         {hasRecruits && result.ownedNfts.length > 0 && (
           <div className="reveal-recruits">
             <span>DETECTED PERSONNEL</span>
-            <div>{result.ownedNfts.map((nft, index) => <motion.div key={nft.mint} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + index * 0.08 }}><Image src={nft.image} width={58} height={58} alt={nft.name} /></motion.div>)}</div>
+            <div>{result.ownedNfts.map((nft, index) => <motion.div key={nft.mint} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + index * 0.08 }}><img src={nft.image} width="58" height="58" alt={nft.name} loading="lazy" /></motion.div>)}</div>
           </div>
         )}
 
@@ -179,4 +179,3 @@ export function CommandCenter() {
     </section>
   );
 }
-

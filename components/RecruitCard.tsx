@@ -1,6 +1,6 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Sites serves bundled artwork directly. */
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { recruitNumber } from "@/lib/nft-metadata";
 import type { NftMetadata } from "@/lib/types";
@@ -15,7 +15,7 @@ export function RecruitCard({ recruit }: { recruit: NftMetadata }) {
       transition={{ type: "spring", stiffness: 280, damping: 20 }}
     >
       <span className="recruit-image-wrap">
-        <Image src={recruit.image} alt={recruit.name} fill sizes="(max-width: 640px) 74vw, 230px" className="recruit-image" />
+        <img src={recruit.image} alt={recruit.name} loading="lazy" className="recruit-image" />
         <span className="serial-stamp">GAS-{recruitNumber(recruit.name)}</span>
       </span>
       <span className="recruit-card-copy">
