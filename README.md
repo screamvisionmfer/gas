@@ -71,4 +71,4 @@ The repository currently uses a deterministic mock result because the existing B
 3. Add `NFT_API_KEY`, `COLLECTION_ADDRESS`, and `NEXT_PUBLIC_SITE_URL` in project environment settings.
 4. Deploy. The default build command is `npm run build`.
 
-This starter also preserves the Sites-compatible Vite/vinext configuration and `.openai/hosting.json`.
+The default `dev`, `build`, and `start` scripts use Next.js for Vercel. The parallel `dev:sites`, `build:sites`, and `start:sites` scripts preserve the Sites-compatible Vite/vinext deployment path and `.openai/hosting.json`.
