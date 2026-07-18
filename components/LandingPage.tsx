@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { getFeaturedRecruits } from "@/lib/nft-metadata";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
 import { CommandCenter } from "./CommandCenter";
@@ -111,7 +110,7 @@ function StatsBar() {
 
 const phases = [
   { icon: "⚑", title: "ESTABLISH THE UNIT", detail: "Create the GAS identity · Produce 777 recruits · Prepare metadata and website" },
-  { icon: "✈", title: "DEPLOY THE SQUADRON", detail: "Launch through LaunchMyNFT · Publish the Recruit Database · Promote original artwork" },
+  { icon: "✈", title: "DEPLOY THE SQUADRON", detail: "Launch through LaunchMyNFT · Showcase selected recruits · Promote original artwork" },
   { icon: "♟", title: "COMPLETE THE FIRST OPERATION", detail: "Complete deployment · Continue meme and community operations" },
   { icon: "▣", title: "THE 4,444 EXPANSION", detail: "A new expanded collection begins once all 777 artworks are sold." },
 ];
@@ -153,13 +152,21 @@ function Roadmap() {
 
 function RecruitCarousel() {
   const recruits = getFeaturedRecruits();
+  const stripRef = useRef<HTMLDivElement>(null);
+  function move(direction: number) {
+    stripRef.current?.scrollBy({ left: direction * Math.min(stripRef.current.clientWidth * 0.82, 920), behavior: "smooth" });
+  }
   return (
     <Reveal>
       <section className="recruits-section" id="recruits" aria-labelledby="recruits-title">
-        <div className="section-heading"><h2 id="recruits-title">Featured Recruits</h2><span className="heading-rule" /><Link href="/recruits">VIEW ALL RECRUITS →</Link></div>
-        <motion.div className="recruit-strip" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}>
+        <div className="section-heading"><h2 id="recruits-title">Selected Recruits</h2><span className="heading-rule" /><span className="roster-note">36 DISPLAY RECORDS · LOCAL PREVIEW</span></div>
+        <div className="recruit-carousel-shell">
+          <button className="carousel-arrow carousel-arrow-left" type="button" onClick={() => move(-1)} aria-label="Previous recruits">‹</button>
+          <motion.div ref={stripRef} className="recruit-strip" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.035 } } }}>
           {recruits.map((recruit) => <motion.div key={recruit.name} variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}><RecruitCard recruit={recruit} /></motion.div>)}
-        </motion.div>
+          </motion.div>
+          <button className="carousel-arrow carousel-arrow-right" type="button" onClick={() => move(1)} aria-label="Next recruits">›</button>
+        </div>
         <div className="carousel-dots" aria-hidden="true"><b /><span /><span /><span /><span /></div>
       </section>
     </Reveal>
@@ -170,7 +177,7 @@ function FinalCTA() {
   return (
     <section className="final-cta">
       <div className="cta-copy"><span>★</span><p><strong>777 UNIQUE RECRUITS. ONE SQUADRON.</strong><br />GIVE {siteConfig.token} AN ARMY.</p></div>
-      <div className="cta-actions"><Link href="/recruits" className="button button-paper">EXPLORE THE 777</Link><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} className="button button-gold" target="_blank" rel="noopener noreferrer">MINT ON LAUNCHMYNFT</a><a href={safeExternalUrl(siteConfig.tokenUrl)} className="button button-outline-light" target="_blank" rel="noopener noreferrer">GET {siteConfig.token}</a></div>
+      <div className="cta-actions"><a href="#recruits" className="button button-paper">VIEW SELECTED RECRUITS</a><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} className="button button-gold" target="_blank" rel="noopener noreferrer">MINT ON LAUNCHMYNFT</a><a href={safeExternalUrl(siteConfig.tokenUrl)} className="button button-outline-light" target="_blank" rel="noopener noreferrer">GET {siteConfig.token}</a></div>
     </section>
   );
 }

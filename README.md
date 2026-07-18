@@ -1,6 +1,6 @@
 # Groypers Alpha Squadron
 
-Production-ready Next.js App Router site for the 777-piece Groypers Alpha Squadron NFT collection. It includes a responsive recruitment-poster landing page, local recruit archive, rank calculator, server-side wallet verification adapter, and dynamic share card route.
+Production-ready Next.js App Router site for the 777-piece Groypers Alpha Squadron NFT collection. It includes a responsive recruitment-poster landing page, lightweight selected-recruit showcase, cinematic rank reveal, server-side wallet verification adapter, and dynamic share card route.
 
 ## Local setup
 
@@ -48,11 +48,11 @@ Place optimized PNG, JPG, AVIF, or WebP assets in `public/nfts/images/`. Add mat
 }
 ```
 
-Import new records in `lib/nft-metadata.ts`. The landing page only selects six featured records; the Recruit Database paginates client-side and does not request 777 large images at once.
+Import 30–40 selected records in `lib/nft-metadata.ts`. The landing page renders a lightweight horizontal showcase only; there is no full 777-item database route and no reason to ship every artwork.
 
 ## Rank artwork
 
-The 12 editable rank thresholds live in `lib/ranks.ts`. Put final rank PNG files in `public/ranks/`, then replace each placeholder `/logo.png` path with a path such as `/ranks/07-lieutenant.png`.
+The 12 editable rank thresholds and image paths live in `lib/ranks.ts`. Rank PNG files are stored in `public/ranks/`; keep the numbered filenames there when replacing artwork.
 
 ## Wallet verification API
 

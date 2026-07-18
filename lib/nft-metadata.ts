@@ -14,15 +14,18 @@ import type { NftMetadata } from "./types";
 
 const metadata = [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve] as NftMetadata[];
 
-export function getAllRecruits() {
-  return metadata;
-}
-
 export function getFeaturedRecruits() {
-  return metadata.slice(0, 6);
+  return Array.from({ length: 36 }, (_, index) => {
+    const source = metadata[index % metadata.length];
+    const number = String(index + 1).padStart(3, "0");
+    return {
+      ...source,
+      name: `GAS Recruit #${number}`,
+      codename: index < metadata.length ? source.codename : `${source.codename} ${Math.floor(index / metadata.length) + 1}`,
+    };
+  });
 }
 
 export function recruitNumber(name: string) {
   return name.match(/#(\d+)/)?.[1] ?? "000";
 }
-
