@@ -16,7 +16,11 @@ export const metadata: Metadata = {
     description: "The signal. The squadron. The amplifier.",
     images: ["/api/share-card"],
   },
-  icons: { icon: "/logo.png", shortcut: "/logo.png" },
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png", sizes: "128x128" }],
+    shortcut: "/favicon.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

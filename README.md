@@ -52,7 +52,7 @@ Import 30–40 selected records in `lib/nft-metadata.ts`. The landing page rende
 
 ## Rank artwork
 
-The 12 editable rank thresholds and image paths live in `lib/ranks.ts`. Rank PNG files are stored in `public/ranks/`; keep the numbered filenames there when replacing artwork.
+The 12 editable rank thresholds and image paths live in `lib/ranks.ts`; Supreme Commander starts at 77 recruits. Original rank PNGs are stored in `public/ranks/`, while the cropped, web-ready versions used by the reveal live in `public/ranks/web/`. Keep both numbered filename sets when replacing artwork.
 
 ## Wallet verification API
 
