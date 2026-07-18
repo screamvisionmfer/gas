@@ -182,8 +182,8 @@ function Footer() {
       <div className="footer-grid">
         <div className="footer-brand"><Image src="/logo.png" width={74} height={74} alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
         <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
-        <div><h3>RESOURCES</h3><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
-        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Twitter</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}<p>Creator: {siteConfig.creatorName}</p></div>
+        <div><h3>RESOURCES</h3><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
+        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / {siteConfig.creatorName}</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}<p>Creator: {siteConfig.creatorName}</p></div>
         <ContractAddress dark />
       </div>
       <div className="footer-bottom">© {year} {siteConfig.name} <span>·</span> {siteConfig.network} collection <span>·</span> One token. One squadron.</div>
@@ -210,4 +210,3 @@ export function LandingPage() {
     </main>
   );
 }
-

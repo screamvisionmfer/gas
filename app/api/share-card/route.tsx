@@ -5,11 +5,11 @@ export const runtime = "edge";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const count = url.searchParams.get("count") ?? "0";
-  const rank = url.searchParams.get("rank") ?? "Recruit";
-  const unit = url.searchParams.get("unit") ?? "Unassigned";
-  const wallet = url.searchParams.get("wallet") ?? "Unknown wallet";
-  const shortened = wallet.length > 10 ? `${wallet.slice(0, 5)}…${wallet.slice(-5)}` : wallet;
+  const count = url.searchParams.get("count") ?? "777";
+  const rank = url.searchParams.get("rank") ?? "Alpha Squadron";
+  const unit = url.searchParams.get("unit") ?? "Hand-drawn Recruits";
+  const wallet = url.searchParams.get("wallet") ?? "ONE TOKEN · ONE SQUADRON";
+  const shortened = wallet.length > 44 ? `${wallet.slice(0, 5)}…${wallet.slice(-5)}` : wallet;
 
   return new ImageResponse(
     <div style={{ width: "100%", height: "100%", display: "flex", background: "#eee9dc", color: "#10120f", padding: 48, fontFamily: "sans-serif", border: "18px solid #263016" }}>
@@ -33,4 +33,3 @@ export async function GET(request: Request) {
     { width: 1200, height: 630 },
   );
 }
-

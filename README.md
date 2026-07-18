@@ -62,7 +62,7 @@ The repository currently uses a deterministic mock result because the existing B
 
 ## Share cards
 
-`app/api/share-card/route.tsx` creates a wallet-specific `ImageResponse` when passed `wallet`, `count`, `rank`, and `unit` query parameters. The static social preview used by page metadata is `public/og.png`.
+`app/api/share-card/route.tsx` creates the default social preview and a wallet-specific `ImageResponse` when passed `wallet`, `count`, `rank`, and `unit` query parameters.
 
 ## GitHub and Vercel
 
@@ -72,4 +72,3 @@ The repository currently uses a deterministic mock result because the existing B
 4. Deploy. The default build command is `npm run build`.
 
 This starter also preserves the Sites-compatible Vite/vinext configuration and `.openai/hosting.json`.
-

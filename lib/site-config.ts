@@ -1,17 +1,19 @@
 export const siteConfig = {
   name: "Groypers Alpha Squadron",
   abbreviation: "GAS",
-  token: "$GROYPERS",
+  token: "$GROYPER",
   supply: 777,
   network: "Solana",
-  contractAddress: "[GROYPERS_CA]",
-  twitterUrl: "[TWITTER_URL]",
+  contractAddress: "44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  twitterUrl: "https://x.com/GroyperPump",
   discordUrl: "",
   launchMyNftUrl: "[LAUNCHMYNFT_URL]",
-  knowYourMemeUrl: "[KNOWYOURMEME_URL]",
-  tokenUrl: "[TOKEN_URL]",
+  knowYourMemeUrl: "https://knowyourmeme.com/memes/groyper",
+  tokenUrl: "https://swap.pump.fun/?input=So11111111111111111111111111111111111111112&output=44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  tokenWebsiteUrl: "https://groyperpump.fun/",
   creatorName: "Screamvision",
-  siteUrl: "http://localhost:3000",
+  creatorTwitterUrl: "https://x.com/scream_vision",
+  siteUrl: "https://groypers-alpha-squadron.screamvision.chatgpt.site",
   stats: {
     deployed: 521,
     commanders: 184,
@@ -28,4 +30,3 @@ export const siteConfig = {
 export function safeExternalUrl(value: string) {
   return /^https?:\/\//.test(value) ? value : "#";
 }
-
