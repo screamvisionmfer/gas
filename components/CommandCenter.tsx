@@ -294,9 +294,7 @@ export function CommandCenter() {
     <section className={`dossier-panel command-panel ${status === "loading" ? "command-panel-scanning" : ""}`} id="command-center" aria-labelledby="command-title">
       <div className="panel-heading"><span>✦</span><h2 id="command-title">Squadron Command</h2><span>✦</span></div>
       <div className="radar-screen" aria-hidden="true">
-        <div className="radar-grid" />
-        <motion.div className="radar-sweep" animate={reduce ? {} : { rotate: 360 }} transition={{ duration: status === "loading" ? 1.2 : 3.4, repeat: Infinity, ease: "linear" }} />
-        <span className="radar-dot dot-one" /><span className="radar-dot dot-two" /><span className="radar-dot dot-three" />
+        <img className="radar-media" src="/squadron-radar.gif" alt="" />
         <strong>{status === "loading" ? "SCAN IN PROGRESS" : "SIGNAL STRENGTH: 100%"}</strong>
       </div>
 
