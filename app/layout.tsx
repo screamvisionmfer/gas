@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Groypers Alpha Squadron — 777 $GROYPER Recruits",
     description: "The signal. The squadron. The amplifier.",
-    images: [{ url: "/api/share-card", width: 1200, height: 630, alt: "Groypers Alpha Squadron" }],
+    images: [{ url: "/logo.png", width: 1536, height: 1536, alt: "Groypers Alpha Squadron" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Groypers Alpha Squadron — 777 $GROYPER Recruits",
     description: "The signal. The squadron. The amplifier.",
-    images: ["/api/share-card"],
+    images: ["/logo.png"],
   },
   icons: {
     icon: [{ url: "/favicon.png", type: "image/png", sizes: "128x128" }],
