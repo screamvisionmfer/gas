@@ -60,9 +60,9 @@ function ContractAddress({ dark = false }: { dark?: boolean }) {
   }
   return (
     <div className={`contract-address ${dark ? "contract-dark" : ""}`}>
-      <strong>{siteConfig.token} CA:</strong>
-      <span title={siteConfig.contractAddress}>{siteConfig.contractAddress}</span>
-      <motion.button type="button" onClick={copy} whileTap={{ scale: 0.9 }} aria-label="Copy contract address">{copied ? "✓ COPIED" : "▣"}</motion.button>
+      <div className="contract-label"><small>OFFICIAL SOLANA CA</small><strong>{siteConfig.token}</strong></div>
+      <code title={siteConfig.contractAddress}>{siteConfig.contractAddress}</code>
+      <motion.button type="button" onClick={copy} whileTap={{ scale: 0.96 }} aria-label="Copy contract address"><span aria-hidden="true">{copied ? "✓" : "▣"}</span>{copied ? "COPIED" : "COPY CA"}</motion.button>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function Footer() {
         <div className="footer-brand"><img src="/logo.png" width="74" height="74" alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
         <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
         <div><h3>RESOURCES</h3><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
-        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / {siteConfig.creatorName}</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}<p>Creator: {siteConfig.creatorName}</p></div>
+        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Founder</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}</div>
         <ContractAddress dark />
       </div>
       <div className="footer-bottom">© {year} {siteConfig.name} <span>·</span> {siteConfig.network} collection <span>·</span> One token. One squadron.</div>
