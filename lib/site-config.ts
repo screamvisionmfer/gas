@@ -13,7 +13,8 @@ export const siteConfig = {
   tokenWebsiteUrl: "https://groyperpump.fun/",
   creatorName: "Screamvision",
   creatorTwitterUrl: "https://x.com/scream_vision",
-  siteUrl: "https://groypers-alpha-squadron.screamvision.chatgpt.site",
+  siteUrl: "https://groypersquadron.xyz",
+  canonicalUrl: "https://www.groypersquadron.xyz",
   stats: {
     deployed: 521,
     commanders: 184,
