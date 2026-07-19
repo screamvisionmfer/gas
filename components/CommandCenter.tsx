@@ -38,9 +38,13 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
+  const [identity, setIdentity] = useState("");
   const reduce = useReducedMotion();
   const hasRecruits = result.count > 0;
-  const shareText = `My Groypers Alpha Squadron consists of ${result.count} recruits.\n\nRank: ${result.rank.name}\nUnit: ${result.unitName}\n\nThe token is the signal.\nThe squadron is the amplifier.\n\n${siteConfig.token}\n\n${siteConfig.siteUrl}`;
+  const personalizedIdentity = identity.trim();
+  const progressPercent = result.nextRank ? Math.min(100, (result.count / result.nextRank.min) * 100) : 100;
+  const personnelLine = personalizedIdentity ? `\nPersonnel: ${personalizedIdentity}` : "";
+  const shareText = `My Groypers Alpha Squadron consists of ${result.count} recruits.${personnelLine}\n\nRank: ${result.rank.name}\nUnit: ${result.unitName}\n\nThe token is the signal.\nThe squadron is the amplifier.\n\n${siteConfig.token}\n\n${siteConfig.siteUrl}`;
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -115,27 +119,69 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
       context.fillStyle = "#a7c83b";
       context.font = "20px 'Top Secret', Impact, sans-serif";
       context.fillText("GAS PERSONNEL SYSTEM / IDENTITY CONFIRMED", 570, 74);
-      context.fillStyle = "#e6bc3a";
-      context.font = "68px 'Top Secret', Impact, sans-serif";
       const rankWords = result.rank.name.toUpperCase().split(" ");
-      const rankLines: string[] = [];
-      let rankLine = "";
-      for (const word of rankWords) {
-        const candidate = rankLine ? `${rankLine} ${word}` : word;
-        if (context.measureText(candidate).width > 570 && rankLine) {
-          rankLines.push(rankLine);
-          rankLine = word;
-        } else {
-          rankLine = candidate;
+      let rankFontSize = 68;
+      let rankLines: string[] = [];
+      while (rankFontSize >= 44) {
+        context.font = `${rankFontSize}px 'Top Secret', Impact, sans-serif`;
+        rankLines = [];
+        let rankLine = "";
+        for (const word of rankWords) {
+          const candidate = rankLine ? `${rankLine} ${word}` : word;
+          if (context.measureText(candidate).width > 570 && rankLine) {
+            rankLines.push(rankLine);
+            rankLine = word;
+          } else {
+            rankLine = candidate;
+          }
         }
+        rankLines.push(rankLine);
+        if (rankLines.length <= 2) break;
+        rankFontSize -= 4;
       }
-      rankLines.push(rankLine);
-      rankLines.slice(0, 3).forEach((line, index) => context.fillText(line, 570, 162 + index * 67));
+      context.fillStyle = "#e6bc3a";
+      context.font = `${rankFontSize}px 'Top Secret', Impact, sans-serif`;
+      const rankLineHeight = Math.round(rankFontSize * 0.98);
+      rankLines.slice(0, 2).forEach((line, index) => context.fillText(line, 570, 162 + index * rankLineHeight));
 
-      const unitY = 178 + Math.min(rankLines.length, 3) * 67;
+      const unitY = rankLines.length > 1 ? 282 : 246;
       context.fillStyle = "#f1eee3";
       context.font = "30px 'Top Secret', Impact, sans-serif";
       context.fillText(result.unitName.toUpperCase(), 570, unitY);
+
+      if (personalizedIdentity) {
+        context.fillStyle = "#8d9666";
+        context.font = "15px 'Operation Napalm', Arial, sans-serif";
+        context.fillText("PERSONNEL", 570, 316);
+        context.fillStyle = "#e6bc3a";
+        let identityFontSize = 25;
+        do {
+          context.font = `${identityFontSize}px 'Top Secret', Impact, sans-serif`;
+          identityFontSize -= 1;
+        } while (context.measureText(personalizedIdentity).width > 450 && identityFontSize > 15);
+        context.fillText(personalizedIdentity, 682, 316);
+      }
+
+      context.fillStyle = "#8d9666";
+      context.font = "15px 'Operation Napalm', Arial, sans-serif";
+      context.fillText(result.nextRank ? "NEXT CLASSIFICATION" : "CLASSIFICATION STATUS", 570, 350);
+      context.textAlign = "right";
+      context.fillStyle = "#f1eee3";
+      context.fillText(result.nextRank?.name.toUpperCase() ?? "MAXIMUM RANK", 1148, 350);
+      context.textAlign = "left";
+      context.fillStyle = "#080a06";
+      context.fillRect(570, 362, 578, 12);
+      context.strokeStyle = "#59603d";
+      context.strokeRect(570, 362, 578, 12);
+      const progressGradient = context.createLinearGradient(570, 0, 1148, 0);
+      progressGradient.addColorStop(0, "#526d1f");
+      progressGradient.addColorStop(0.65, "#b1ce45");
+      progressGradient.addColorStop(1, "#d7ac2c");
+      context.fillStyle = progressGradient;
+      context.fillRect(571, 363, Math.max(0, 576 * progressPercent / 100), 10);
+      context.fillStyle = "#8d9666";
+      context.font = "15px 'Operation Napalm', Arial, sans-serif";
+      context.fillText(result.nextRank ? `${result.recruitsUntilNextRank} RECRUITS REQUIRED` : "MAXIMUM CLASSIFICATION ACHIEVED", 570, 398);
 
       const metricsY = 422;
       context.fillStyle = "rgba(10, 15, 7, .82)";
@@ -223,13 +269,34 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
           <div className="rank-report-id"><span>REPORT ID</span><strong>GAS-{result.wallet.slice(0, 4).toUpperCase()}</strong></div>
         </div>
 
-        {result.nextRank && hasRecruits && (
+        <div className="reveal-personalization">
+          <label htmlFor="report-identity"><span>PERSONALIZE REPORT</span><small>OPTIONAL</small></label>
+          <input
+            id="report-identity"
+            type="text"
+            value={identity}
+            onChange={(event) => setIdentity(event.target.value)}
+            maxLength={32}
+            placeholder="Name or @handle"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <small>Shown on the saved PNG and in shared report text.</small>
+        </div>
+
+        {result.nextRank && hasRecruits ? (
           <div className="reveal-progress">
             <div><span>NEXT CLASSIFICATION</span><strong>{result.nextRank.name}</strong></div>
-            <div className="reveal-progress-track"><motion.span initial={{ width: 0 }} animate={{ width: `${Math.min(100, (result.count / result.nextRank.min) * 100)}%` }} transition={{ delay: 0.9, duration: 0.8 }} /></div>
+            <div className="reveal-progress-track"><motion.span initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ delay: 0.9, duration: 0.8 }} /></div>
             <small>{result.recruitsUntilNextRank} recruits required</small>
           </div>
-        )}
+        ) : hasRecruits ? (
+          <div className="reveal-progress reveal-progress-complete">
+            <div><span>CLASSIFICATION STATUS</span><strong>MAXIMUM RANK</strong></div>
+            <div className="reveal-progress-track"><motion.span initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ delay: 0.9, duration: 0.8 }} /></div>
+            <small>Maximum classification achieved</small>
+          </div>
+        ) : null}
 
         {hasRecruits && result.ownedNfts.length > 0 && (
           <div className="reveal-recruits">
