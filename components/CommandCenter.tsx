@@ -113,10 +113,10 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
       drawContainedImage(context, insignia, 106, 86, 400, 400);
 
       context.fillStyle = "#a7c83b";
-      context.font = "700 20px Impact, Arial Narrow, sans-serif";
+      context.font = "20px 'Top Secret', Impact, sans-serif";
       context.fillText("GAS PERSONNEL SYSTEM / IDENTITY CONFIRMED", 570, 74);
       context.fillStyle = "#e6bc3a";
-      context.font = "900 68px Impact, Arial Narrow, sans-serif";
+      context.font = "68px 'Top Secret', Impact, sans-serif";
       const rankWords = result.rank.name.toUpperCase().split(" ");
       const rankLines: string[] = [];
       let rankLine = "";
@@ -134,7 +134,7 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
 
       const unitY = 178 + Math.min(rankLines.length, 3) * 67;
       context.fillStyle = "#f1eee3";
-      context.font = "700 30px Impact, Arial Narrow, sans-serif";
+      context.font = "30px 'Top Secret', Impact, sans-serif";
       context.fillText(result.unitName.toUpperCase(), 570, unitY);
 
       const metricsY = 422;
@@ -143,28 +143,28 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
       context.strokeStyle = "#697044";
       context.strokeRect(548, metricsY, 602, 116);
       context.fillStyle = "#8d9666";
-      context.font = "700 15px Impact, Arial Narrow, sans-serif";
+      context.font = "15px 'Operation Napalm', Arial, sans-serif";
       context.fillText("ACTIVE RECRUITS", 572, metricsY + 30);
       context.fillText("WALLET", 746, metricsY + 30);
       context.fillText("REPORT ID", 955, metricsY + 30);
       context.fillStyle = "#e7bb36";
-      context.font = "900 44px Impact, Arial Narrow, sans-serif";
+      context.font = "44px 'Top Secret', Impact, sans-serif";
       context.fillText(String(result.count).padStart(2, "0"), 572, metricsY + 82);
       context.fillStyle = "#f1eee3";
-      context.font = "700 24px Impact, Arial Narrow, sans-serif";
+      context.font = "24px 'Operation Napalm', Arial, sans-serif";
       context.fillText(shortenWallet(result.wallet), 746, metricsY + 79);
       context.fillText(`GAS-${result.wallet.slice(0, 4).toUpperCase()}`, 955, metricsY + 79);
 
       drawContainedImage(context, logo, 52, 526, 62, 62);
       context.fillStyle = "#f1eee3";
-      context.font = "700 21px Impact, Arial Narrow, sans-serif";
+      context.font = "21px 'Top Secret', Impact, sans-serif";
       context.fillText("GROYPERS ALPHA SQUADRON", 130, 554);
       context.fillStyle = "#9dbb37";
-      context.font = "700 16px Arial, sans-serif";
+      context.font = "16px 'Operation Napalm', Arial, sans-serif";
       context.fillText("THE TOKEN IS THE SIGNAL. THE SQUADRON IS THE AMPLIFIER.", 130, 580);
       context.textAlign = "right";
       context.fillStyle = "#d7ae35";
-      context.font = "700 18px Arial, sans-serif";
+      context.font = "18px 'Operation Napalm', Arial, sans-serif";
       context.fillText(siteConfig.token, 1148, 572);
       context.textAlign = "left";
 

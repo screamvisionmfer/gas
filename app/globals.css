@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Top Secret";
+  src: url("/fonts/TopSecretCL.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Operation Napalm";
+  src: url("/fonts/OperationNapalm-Regular.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Operation Napalm";
+  src: url("/fonts/OperationNapalm-Italic.otf") format("opentype");
+  font-display: swap;
+  font-style: italic;
+  font-weight: 400;
+}
+
 :root {
   --ink: #11130f;
   --paper: #eee9dc;
@@ -9,8 +33,8 @@
   --olive-pale: #aab17b;
   --gold: #d8a91d;
   --line: rgba(17, 19, 15, 0.35);
-  --heading: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Narrow", sans-serif;
-  --body: "Arial Narrow", Arial, sans-serif;
+  --heading: "Top Secret", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  --body: "Operation Napalm", "Arial Narrow", Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
