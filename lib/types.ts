@@ -1,10 +1,14 @@
-export type Attribute = { trait_type: string; value: string };
+export type Attribute = {
+  trait_type: string;
+  value: string | number;
+  display_type?: string;
+};
 
 export type NftMetadata = {
   name: string;
   description: string;
+  symbol?: string;
   image: string;
-  codename: string;
   attributes: Attribute[];
 };
 
@@ -31,4 +35,3 @@ export type SquadronResult = {
   nextRank?: Rank;
   recruitsUntilNextRank?: number;
 };
-

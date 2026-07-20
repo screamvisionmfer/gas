@@ -1,0 +1,49 @@
+{
+  "name": "GROYPER #27",
+  "description": "GROYPER #27 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_27.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Mint"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Based Smile"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "O_o Eyes"
+    },
+    {
+      "trait_type": "Clothes",
+      "value": "Based Black T-Shirt"
+    },
+    {
+      "trait_type": "Pendant",
+      "value": "Forty-Four Pendant"
+    },
+    {
+      "trait_type": "Hats",
+      "value": "Black Tactical Boonie Hat"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Tactical Lead"
+    },
+    {
+      "trait_type": "Weapons",
+      "value": "Golden AK-47"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 359,
+      "display_type": "number"
+    }
+  ]
+}

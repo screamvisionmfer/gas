@@ -1,0 +1,49 @@
+{
+  "name": "GROYPER #3",
+  "description": "GROYPER #3 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_3.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Desert Camo"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Based Smile"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Shiner Eyes"
+    },
+    {
+      "trait_type": "Face Accessories",
+      "value": "Agent Sunglasses"
+    },
+    {
+      "trait_type": "Clothes",
+      "value": "Red-TMF-Puff-Jacket"
+    },
+    {
+      "trait_type": "Hats",
+      "value": "Officer Ushanka"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Civilian"
+    },
+    {
+      "trait_type": "Hands",
+      "value": "Boxing Hands"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 32,
+      "display_type": "number"
+    }
+  ]
+}

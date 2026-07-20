@@ -2,9 +2,9 @@
 /* eslint-disable @next/next/no-img-element -- Sites serves bundled artwork directly. */
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useRef, useState } from "react";
-import { getFeaturedRecruits } from "@/lib/nft-metadata";
+import { useEffect, useRef, useState } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
+import type { NftMetadata } from "@/lib/types";
 import { CommandCenter } from "./CommandCenter";
 import { RecruitCard } from "./RecruitCard";
 import { Reveal } from "./Reveal";
@@ -150,26 +150,61 @@ function Roadmap() {
   );
 }
 
-function RecruitCarousel() {
-  const recruits = getFeaturedRecruits();
+function RecruitCarousel({ recruits }: { recruits: NftMetadata[] }) {
   const stripRef = useRef<HTMLDivElement>(null);
+  const [selectedRecruit, setSelectedRecruit] = useState<NftMetadata | null>(null);
+
+  useEffect(() => {
+    if (!selectedRecruit) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedRecruit(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [selectedRecruit]);
+
   function move(direction: number) {
     stripRef.current?.scrollBy({ left: direction * Math.min(stripRef.current.clientWidth * 0.82, 920), behavior: "smooth" });
   }
   return (
-    <Reveal>
-      <section className="recruits-section" id="recruits" aria-labelledby="recruits-title">
-        <div className="section-heading"><h2 id="recruits-title">Selected Recruits</h2><span className="heading-rule" /><span className="roster-note">36 DISPLAY RECORDS · LOCAL PREVIEW</span></div>
-        <div className="recruit-carousel-shell">
-          <button className="carousel-arrow carousel-arrow-left" type="button" onClick={() => move(-1)} aria-label="Previous recruits">‹</button>
-          <motion.div ref={stripRef} className="recruit-strip" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.035 } } }}>
-          {recruits.map((recruit) => <motion.div key={recruit.name} variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}><RecruitCard recruit={recruit} /></motion.div>)}
+    <>
+      <Reveal>
+        <section className="recruits-section" id="recruits" aria-labelledby="recruits-title">
+          <div className="section-heading"><h2 id="recruits-title">Selected Recruits</h2><span className="heading-rule" /></div>
+          <div className="recruit-carousel-shell">
+            <button className="carousel-arrow carousel-arrow-left" type="button" onClick={() => move(-1)} aria-label="Previous recruits">‹</button>
+            <motion.div ref={stripRef} className="recruit-strip" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.035 } } }}>
+              {recruits.map((recruit) => <motion.div key={recruit.name} variants={{ hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0 } }}><RecruitCard recruit={recruit} onSelect={() => setSelectedRecruit(recruit)} /></motion.div>)}
+            </motion.div>
+            <button className="carousel-arrow carousel-arrow-right" type="button" onClick={() => move(1)} aria-label="Next recruits">›</button>
+          </div>
+        </section>
+      </Reveal>
+
+      <AnimatePresence>
+        {selectedRecruit && (
+          <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={() => setSelectedRecruit(null)}>
+            <motion.section className="recruit-modal" initial={{ opacity: 0, scale: 0.94, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 16 }} onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="recruit-modal-title">
+              <button className="modal-close" type="button" onClick={() => setSelectedRecruit(null)} aria-label="Close recruit traits">&times;</button>
+              <div className="modal-image"><img src={selectedRecruit.image} alt={selectedRecruit.name} /></div>
+              <div className="modal-copy">
+                <h2 id="recruit-modal-title">{selectedRecruit.name}</h2>
+                <div className="attribute-list">
+                  {selectedRecruit.attributes.map((attribute, index) => (
+                    <div key={`${attribute.trait_type}-${index}`}><span>{attribute.trait_type}</span><strong>{attribute.trait_type === "Rarity Rank" ? `#${attribute.value}` : attribute.value}</strong></div>
+                  ))}
+                </div>
+              </div>
+            </motion.section>
           </motion.div>
-          <button className="carousel-arrow carousel-arrow-right" type="button" onClick={() => move(1)} aria-label="Next recruits">›</button>
-        </div>
-        <div className="carousel-dots" aria-hidden="true"><b /><span /><span /><span /><span /></div>
-      </section>
-    </Reveal>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -198,7 +233,7 @@ function Footer() {
   );
 }
 
-export function LandingPage() {
+export function LandingPage({ recruits }: { recruits: NftMetadata[] }) {
   return (
     <main className="site-shell">
       <Header />
@@ -210,7 +245,7 @@ export function LandingPage() {
           <Reveal delay={0.08}><Roadmap /></Reveal>
           <Reveal delay={0.16}><CommandCenter /></Reveal>
         </div>
-        <RecruitCarousel />
+        <RecruitCarousel recruits={recruits} />
       </div>
       <FinalCTA />
       <Footer />

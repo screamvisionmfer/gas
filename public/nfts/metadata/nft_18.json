@@ -1,0 +1,49 @@
+{
+  "name": "GROYPER #18",
+  "description": "GROYPER #18 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_18.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Frown"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Based Eyes"
+    },
+    {
+      "trait_type": "Face Accessories",
+      "value": "Rubber Nose"
+    },
+    {
+      "trait_type": "Hats",
+      "value": "Crusader Iron Helmet"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Recruit"
+    },
+    {
+      "trait_type": "Weapons",
+      "value": "M4 AR"
+    },
+    {
+      "trait_type": "Hands",
+      "value": "Well-Well Hands"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 601,
+      "display_type": "number"
+    }
+  ]
+}

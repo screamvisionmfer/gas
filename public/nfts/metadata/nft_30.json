@@ -1,0 +1,53 @@
+{
+  "name": "GROYPER #30",
+  "description": "GROYPER #30 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_30.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Mint"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Lips"
+    },
+    {
+      "trait_type": "Facial Hair",
+      "value": "Five O'Clock Shadow"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "High Eyes"
+    },
+    {
+      "trait_type": "Face Accessories",
+      "value": "Golden Sunglasses"
+    },
+    {
+      "trait_type": "Clothes",
+      "value": "Green YE Hooligan Hoodie"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Tactical Lead"
+    },
+    {
+      "trait_type": "Weapons",
+      "value": "Spear"
+    },
+    {
+      "trait_type": "Hands",
+      "value": "Based Hands"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 497,
+      "display_type": "number"
+    }
+  ]
+}

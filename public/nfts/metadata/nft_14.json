@@ -1,0 +1,53 @@
+{
+  "name": "GROYPER #14",
+  "description": "GROYPER #14 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_14.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Cyberpunk Street"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Based Smile"
+    },
+    {
+      "trait_type": "Facial Hair",
+      "value": "Handlebar Mustache"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Based Eyes"
+    },
+    {
+      "trait_type": "Face Accessories",
+      "value": "Broken Nerd Glasses"
+    },
+    {
+      "trait_type": "Pendant",
+      "value": "Rekt Tekashi Silver Pendant"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Operative"
+    },
+    {
+      "trait_type": "Weapons",
+      "value": "Chainsaw"
+    },
+    {
+      "trait_type": "Hands",
+      "value": "Well-Well Hands"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 654,
+      "display_type": "number"
+    }
+  ]
+}

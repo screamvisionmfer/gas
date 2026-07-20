@@ -1,0 +1,49 @@
+{
+  "name": "GROYPER #32",
+  "description": "GROYPER #32 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_32.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Dark Mint"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Based Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Mfer"
+    },
+    {
+      "trait_type": "Facial Hair",
+      "value": "Handlebar Mustache"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Based Eyes"
+    },
+    {
+      "trait_type": "Clothes",
+      "value": "Silver-Armor"
+    },
+    {
+      "trait_type": "Hats",
+      "value": "Trollface Mask"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Prospect"
+    },
+    {
+      "trait_type": "Hands",
+      "value": "Well-Well Hands"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 77,
+      "display_type": "number"
+    }
+  ]
+}

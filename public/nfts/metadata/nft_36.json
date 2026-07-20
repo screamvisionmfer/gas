@@ -1,0 +1,41 @@
+{
+  "name": "GROYPER #36",
+  "description": "GROYPER #36 — is an official member of the Groypers Alpha Squadron. One of only 777 unique recruits.\n\nEach recruit is part of the $GROYPER universe, created to support the visibility, recognition and visual identity of the token.\n\nCA: 44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  "symbol": "GAS",
+  "image": "./images/nft_36.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Purple"
+    },
+    {
+      "trait_type": "Body",
+      "value": "OG Body"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Dr.Acula"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Based Eyes"
+    },
+    {
+      "trait_type": "Hats",
+      "value": "M1 Helmet"
+    },
+    {
+      "trait_type": "Ranks",
+      "value": "Operative"
+    },
+    {
+      "trait_type": "Weapons",
+      "value": "Mossin Rifle"
+    },
+    {
+      "trait_type": "Rarity Rank",
+      "value": 700,
+      "display_type": "number"
+    }
+  ]
+}
