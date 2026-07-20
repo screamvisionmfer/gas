@@ -1,0 +1,104 @@
+import { siteConfig } from "./site-config";
+
+type DasFile = {
+  uri?: string;
+  cdn_uri?: string;
+  mime?: string;
+};
+
+export type DasAsset = {
+  id: string;
+  burnt?: boolean;
+  content?: {
+    metadata?: { name?: string };
+    files?: DasFile[];
+    links?: { image?: string };
+  };
+  ownership?: {
+    owner?: string;
+  };
+};
+
+type DasAssetList = {
+  total?: number;
+  items?: DasAsset[];
+};
+
+type HeliusRpcResponse<T> = {
+  result?: T;
+  error?: { code?: number; message?: string };
+};
+
+function apiKey() {
+  return process.env.HELIUS_API_KEY ?? process.env.NFT_API_KEY;
+}
+
+export function collectionAddress() {
+  return process.env.COLLECTION_ADDRESS ?? siteConfig.collectionAddress;
+}
+
+async function heliusRpc<T>(method: string, params: Record<string, unknown>): Promise<T> {
+  const key = apiKey();
+  if (!key) throw new Error("Helius API key is not configured.");
+
+  const response = await fetch(`https://mainnet.helius-rpc.com/?api-key=${encodeURIComponent(key)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: `gas-${method}`, method, params }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(12_000),
+  });
+
+  if (!response.ok) {
+    if (response.status === 429) throw new Error("Squadron scanner is temporarily rate limited.");
+    throw new Error("Helius is temporarily unavailable.");
+  }
+
+  const payload = await response.json() as HeliusRpcResponse<T>;
+  if (payload.error || !payload.result) throw new Error(payload.error?.message ?? "Helius returned an invalid response.");
+  return payload.result;
+}
+
+export async function getCollectionAssets() {
+  const result = await heliusRpc<DasAssetList>("getAssetsByGroup", {
+    groupKey: "collection",
+    groupValue: collectionAddress(),
+    page: 1,
+    limit: 1000,
+  });
+
+  return {
+    total: result.total ?? result.items?.length ?? 0,
+    items: (result.items ?? []).filter((asset) => !asset.burnt),
+  };
+}
+
+export async function getWalletCollectionAssets(ownerAddress: string) {
+  const result = await heliusRpc<DasAssetList>("searchAssets", {
+    ownerAddress,
+    grouping: ["collection", collectionAddress()],
+    tokenType: "nonFungible",
+    page: 1,
+    limit: 1000,
+    options: {
+      showGrandTotal: true,
+      showUnverifiedCollections: false,
+      showZeroBalance: false,
+    },
+  });
+
+  return {
+    total: result.total ?? result.items?.length ?? 0,
+    items: (result.items ?? []).filter((asset) => !asset.burnt),
+  };
+}
+
+export function assetName(asset: DasAsset) {
+  return asset.content?.metadata?.name?.trim() || `GAS Recruit ${asset.id.slice(0, 5)}`;
+}
+
+export function assetImage(asset: DasAsset) {
+  const files = asset.content?.files ?? [];
+  const image = files.find((file) => file.mime?.startsWith("image/")) ?? files[0];
+  return image?.cdn_uri ?? image?.uri ?? asset.content?.links?.image ?? "/logo.png";
+}

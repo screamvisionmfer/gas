@@ -4,7 +4,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
-import type { NftMetadata } from "@/lib/types";
+import type { NftMetadata, SquadronStats } from "@/lib/types";
 import { CommandCenter } from "./CommandCenter";
 import { RecruitCard } from "./RecruitCard";
 import { Reveal } from "./Reveal";
@@ -98,14 +98,25 @@ function Hero() {
 }
 
 function StatsBar() {
+  const [liveStats, setLiveStats] = useState<SquadronStats | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/squadron-stats", { signal: controller.signal })
+      .then((response) => response.ok ? response.json() as Promise<SquadronStats> : Promise.reject())
+      .then(setLiveStats)
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+
   const stats = [
     ["◉", siteConfig.supply, "UNIQUE RECRUITS"],
-    ["♟", siteConfig.stats.deployed, "DEPLOYED"],
-    ["≋", siteConfig.stats.commanders, "VERIFIED COMMANDERS"],
-    ["▰", siteConfig.stats.largestArmy, "LARGEST KNOWN ARMY"],
+    ["♟", liveStats?.deployed ?? "—", "DEPLOYED"],
+    ["≋", liveStats?.commanders ?? "—", "VERIFIED COMMANDERS"],
+    ["▰", liveStats?.largestArmy ?? "—", "LARGEST KNOWN ARMY"],
     ["★", "ONE TOKEN", "ONE SQUADRON"],
   ];
-  return <Reveal><section className="stats-bar" aria-label="Squadron statistics">{stats.map(([icon, value, label]) => <div className="stat" key={label}><span>{icon}</span><p><strong>{value}</strong><small>{label}</small></p></div>)}</section></Reveal>;
+  return <Reveal><section className="stats-bar" aria-label="Squadron statistics" aria-busy={!liveStats}>{stats.map(([icon, value, label]) => <div className="stat" key={label}><span>{icon}</span><p><strong>{value}</strong><small>{label}</small></p></div>)}</section></Reveal>;
 }
 
 const phases = [

@@ -35,3 +35,10 @@ export type SquadronResult = {
   nextRank?: Rank;
   recruitsUntilNextRank?: number;
 };
+
+export type SquadronStats = {
+  deployed: number;
+  commanders: number;
+  largestArmy: number;
+  updatedAt: string;
+};

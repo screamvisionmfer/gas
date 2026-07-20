@@ -5,6 +5,7 @@ export const siteConfig = {
   supply: 777,
   network: "Solana",
   contractAddress: "44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  collectionAddress: "DS54gL9wUofvjd9V7iVmMWk1Pwx2vf4G4mW1Kci6t239",
   twitterUrl: "https://x.com/GroyperPump",
   discordUrl: "",
   launchMyNftUrl: "https://launchmynft.io/collections/2Fbg8k4Cz1vfTCSBVKG15sFzRh6yLroJuH3zpM4FqLPo/klGgAOjY2RrRiZ08VBBa",
@@ -15,11 +16,6 @@ export const siteConfig = {
   creatorTwitterUrl: "https://x.com/scream_vision",
   siteUrl: "https://groypersquadron.xyz",
   canonicalUrl: "https://www.groypersquadron.xyz",
-  stats: {
-    deployed: 521,
-    commanders: 184,
-    largestArmy: 67,
-  },
   roadmap: [
     { phase: "01", title: "ESTABLISH THE UNIT", status: "COMPLETED", state: "complete" },
     { phase: "02", title: "DEPLOY THE SQUADRON", status: "COMPLETED", state: "complete" },
