@@ -42,6 +42,7 @@ export type SquadronResult = {
 
 export type SquadronStats = {
   deployed: number;
+  teamAllocation: number;
   commanders: number;
   largestArmy: number;
   updatedAt: string;

@@ -16,6 +16,11 @@ export const siteConfig = {
   creatorTwitterUrl: "https://x.com/scream_vision",
   siteUrl: "https://groypersquadron.xyz",
   canonicalUrl: "https://www.groypersquadron.xyz",
+  statistics: {
+    largestArmyExcludedWallets: [
+      "2Fbg8k4Cz1vfTCSBVKG15sFzRh6yLroJuH3zpM4FqLPo",
+    ],
+  },
   banner: {
     width: 1500,
     height: 500,

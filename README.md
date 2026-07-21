@@ -22,6 +22,10 @@ npm run build
 
 Edit `lib/site-config.ts` to update project links, token and collection addresses, roadmap statuses, site URL, and X-banner dimensions/labels. Repeated project values are centralized there.
 
+Team-allocation or treasury wallets that should not compete for `LARGEST KNOWN ARMY` belong in `siteConfig.statistics.largestArmyExcludedWallets`. They remain included in the total deployed supply and commander count; only the public maximum holding is filtered.
+
+The hero logo and `DEPLOYED` statistic use LaunchMyNFT's official `totalMints / maxSupply` values, including team allocation. Hover, keyboard focus, or a tap reveals the sold total, percentage, and team-allocation breakdown. Helius remains the ownership source for commanders and largest-army calculations. The logo and statistics bar share one API request.
+
 Copy `.env.example` to `.env.local` and fill in server-only values:
 
 ```env

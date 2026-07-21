@@ -3,6 +3,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
 import type { NftMetadata, SquadronStats } from "@/lib/types";
 import { CommandCenter } from "./CommandCenter";
@@ -67,8 +68,15 @@ function ContractAddress({ dark = false }: { dark?: boolean }) {
   );
 }
 
-function Hero() {
+function Hero({ liveStats }: { liveStats: SquadronStats | null }) {
   const reduce = useReducedMotion();
+  const minted = liveStats?.deployed ?? 0;
+  const mintedPercentage = liveStats ? Math.min(100, Math.max(0, (minted / siteConfig.supply) * 100)) : 0;
+  const mintedPercentageLabel = mintedPercentage.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
+  const progressStyle = { "--sold-progress": `${mintedPercentage}%` } as CSSProperties;
+  const progressLabel = liveStats
+    ? `${mintedPercentageLabel}% minted. ${minted} total minted out of ${siteConfig.supply}, including ${liveStats.teamAllocation} team allocation.`
+    : "Synchronizing live mint progress.";
   return (
     <section className="hero" id="top">
       <motion.span className="map-mark map-a" animate={reduce ? {} : { rotate: [0, 7, 0], y: [0, -8, 0] }} transition={{ duration: 8, repeat: Infinity }}>×</motion.span>
@@ -89,7 +97,19 @@ function Hero() {
         <motion.div className="hero-art" initial={reduce ? false : { opacity: 0, scale: 0.88, rotate: 2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.75, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}>
           <div className="aircraft aircraft-one">✈</div><div className="aircraft aircraft-two">✈</div>
           <div className="logo-halo" />
-          <img src="/logo.png" alt="Groypers Alpha Squadron military badge" width="760" height="760" fetchPriority="high" />
+          <button className={`hero-logo-progress ${liveStats ? "is-ready" : "is-syncing"}`} type="button" style={progressStyle} aria-label={progressLabel} aria-describedby="mint-progress-details">
+            <img className="hero-logo-muted" src="/logo.png" alt="" width="760" height="760" fetchPriority="high" />
+            <img className="hero-logo-fill" src="/logo.png" alt="" width="760" height="760" fetchPriority="high" />
+            <span className="hero-logo-progress-line" aria-hidden="true" />
+            <span className="hero-logo-percentage" aria-hidden="true"><small>{liveStats ? "LIVE MINT" : "LIVE STATUS"}</small><strong>{liveStats ? `${mintedPercentageLabel}%` : "SYNC"}</strong><em>{liveStats ? "SOLD" : "CONNECTING"}</em></span>
+            <span className="hero-logo-tooltip" id="mint-progress-details" role="status">
+              <b>MINT INTELLIGENCE</b>
+              <span><small>TOTAL SOLD</small><strong>{liveStats ? `${liveStats.deployed} / ${siteConfig.supply}` : "—"}</strong></span>
+              <span><small>MINT PROGRESS</small><strong>{liveStats ? `${mintedPercentageLabel}%` : "—"}</strong></span>
+              <span><small>TEAM ALLOCATION</small><strong>{liveStats ? liveStats.teamAllocation : "—"}</strong></span>
+              <em>LIVE ON-CHAIN DATA · HOVER / TAP</em>
+            </span>
+          </button>
           <span className="classified-stamp">CLASSIFIED<br />ALPHA UNIT</span>
         </motion.div>
       </div>
@@ -97,18 +117,7 @@ function Hero() {
   );
 }
 
-function StatsBar() {
-  const [liveStats, setLiveStats] = useState<SquadronStats | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/squadron-stats", { signal: controller.signal })
-      .then((response) => response.ok ? response.json() as Promise<SquadronStats> : Promise.reject())
-      .then(setLiveStats)
-      .catch(() => undefined);
-    return () => controller.abort();
-  }, []);
-
+function StatsBar({ liveStats }: { liveStats: SquadronStats | null }) {
   const stats = [
     ["◉", siteConfig.supply, "UNIQUE RECRUITS"],
     ["♟", liveStats?.deployed ?? "—", "DEPLOYED"],
@@ -245,12 +254,23 @@ function Footer() {
 }
 
 export function LandingPage({ recruits }: { recruits: NftMetadata[] }) {
+  const [liveStats, setLiveStats] = useState<SquadronStats | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/squadron-stats", { signal: controller.signal })
+      .then((response) => response.ok ? response.json() as Promise<SquadronStats> : Promise.reject())
+      .then(setLiveStats)
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+
   return (
     <main className="site-shell">
       <Header />
-      <Hero />
+      <Hero liveStats={liveStats} />
       <div className="content-wrap">
-        <StatsBar />
+        <StatsBar liveStats={liveStats} />
         <div className="information-grid">
           <Reveal><AboutCollection /></Reveal>
           <Reveal delay={0.08}><Roadmap /></Reveal>
