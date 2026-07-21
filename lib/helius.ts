@@ -25,6 +25,18 @@ export type DasAsset = {
   };
 };
 
+type ParsedTokenAccount = {
+  account?: {
+    data?: {
+      parsed?: {
+        info?: {
+          tokenAmount?: { uiAmountString?: string; uiAmount?: number };
+        };
+      };
+    };
+  };
+};
+
 type DasAssetList = {
   total?: number;
   items?: DasAsset[];
@@ -43,7 +55,7 @@ export function collectionAddress() {
   return process.env.COLLECTION_ADDRESS ?? siteConfig.collectionAddress;
 }
 
-async function heliusRpc<T>(method: string, params: Record<string, unknown>): Promise<T> {
+async function heliusRpc<T>(method: string, params: unknown): Promise<T> {
   const key = apiKey();
   if (!key) throw new Error("Helius API key is not configured.");
 
@@ -63,6 +75,20 @@ async function heliusRpc<T>(method: string, params: Record<string, unknown>): Pr
   const payload = await response.json() as HeliusRpcResponse<T>;
   if (payload.error || !payload.result) throw new Error(payload.error?.message ?? "Helius returned an invalid response.");
   return payload.result;
+}
+
+export async function getFungibleTokenBalance(ownerAddress: string, mintAddress: string) {
+  const result = await heliusRpc<{ value?: ParsedTokenAccount[] }>("getTokenAccountsByOwner", [
+    ownerAddress,
+    { mint: mintAddress },
+    { encoding: "jsonParsed", commitment: "confirmed" },
+  ]);
+
+  return (result.value ?? []).reduce((total, item) => {
+    const tokenAmount = item.account?.data?.parsed?.info?.tokenAmount;
+    const balance = Number(tokenAmount?.uiAmountString ?? tokenAmount?.uiAmount ?? 0);
+    return total + (Number.isFinite(balance) ? balance : 0);
+  }, 0);
 }
 
 export async function getCollectionAssets() {

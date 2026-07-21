@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- Sites serves bundled artwork directly. */
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
@@ -11,24 +12,24 @@ import { RecruitCard } from "./RecruitCard";
 import { Reveal } from "./Reveal";
 
 const navItems = [
-  ["Mission", "#mission"],
-  ["Recruits", "#recruits"],
-  ["Command Center", "#command-center"],
-  ["Roadmap", "#roadmap"],
-  ["FAQ", "#faq"],
+  ["Mission", "/#mission"],
+  ["Recruits", "/#recruits"],
+  ["Command Center", "/#command-center"],
+  ["Roadmap", "/#roadmap"],
+  ["Materials", "/materials"],
 ] as const;
 
-function Header() {
+export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="site-header">
       <div className="header-inner">
-        <a href="#top" className="brand" aria-label="Groypers Alpha Squadron home">
+        <Link href="/" className="brand" aria-label="Groypers Alpha Squadron home">
           <img src="/logo.png" alt="GAS logo" width="72" height="72" fetchPriority="high" />
           <span><strong>GROYPERS</strong><b>ALPHA SQUADRON</b></span>
-        </a>
+        </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
-          {navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+          {navItems.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
         </nav>
         <div className="header-actions">
           <a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X / Twitter">𝕏</a>
@@ -42,7 +43,7 @@ function Header() {
           <motion.div className="mobile-menu" initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
             <div className="mobile-menu-top"><span>FIELD NAVIGATION / GAS</span><button type="button" onClick={() => setOpen(false)} aria-label="Close navigation">×</button></div>
             <nav aria-label="Mobile navigation">
-              {navItems.map(([label, href], index) => <motion.a key={href} href={href} onClick={() => setOpen(false)} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}><small>0{index + 1}</small>{label}</motion.a>)}
+              {navItems.map(([label, href], index) => <motion.div key={href} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}><Link href={href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{label}</Link></motion.div>)}
             </nav>
             <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold button-full">MINT ON LAUNCHMYNFT</a>
           </motion.div>
@@ -237,14 +238,14 @@ function FinalCTA() {
   );
 }
 
-function Footer() {
+export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="site-footer" id="faq">
       <div className="footer-grid">
         <div className="footer-brand"><img src="/logo.png" width="74" height="74" alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
-        <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
-        <div><h3>RESOURCES</h3><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
+        <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}</div>
+        <div><h3>RESOURCES</h3><Link href="/materials">Squadron Materials</Link><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
         <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Founder</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}</div>
         <ContractAddress dark />
       </div>
