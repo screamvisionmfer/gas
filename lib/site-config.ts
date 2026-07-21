@@ -11,12 +11,6 @@ export const siteConfig = {
   twitterUrl: "https://x.com/GroyperPump",
   discordUrl: "",
   launchMyNftUrl: "https://launchmynft.io/collections/2Fbg8k4Cz1vfTCSBVKG15sFzRh6yLroJuH3zpM4FqLPo/klGgAOjY2RrRiZ08VBBa",
-  launchMyNftEmbed: {
-    ownerId: "2Fbg8k4Cz1vfTCSBVKG15sFzRh6yLroJuH3zpM4FqLPo",
-    collectionId: "klGgAOjY2RrRiZ08VBBa",
-    scriptUrl: "https://storage.googleapis.com/scriptslmt/0.1.3/solana.js",
-    stylesheetUrl: "https://storage.googleapis.com/scriptslmt/0.1.3/solana.css",
-  },
   knowYourMemeUrl: "https://knowyourmeme.com/memes/groyper",
   tokenUrl: `https://swap.pump.fun/?input=So11111111111111111111111111111111111111112&output=${groyperConfig.tokenMint}`,
   tokenWebsiteUrl: "https://groyperpump.fun/",

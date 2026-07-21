@@ -8,7 +8,6 @@ import type { CSSProperties } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
 import type { NftMetadata, SquadronStats } from "@/lib/types";
 import { CommandCenter } from "./CommandCenter";
-import { LaunchMyNftMint } from "./LaunchMyNftMint";
 import { RecruitCard } from "./RecruitCard";
 import { Reveal } from "./Reveal";
 
@@ -92,7 +91,7 @@ function Hero({ liveStats }: { liveStats: SquadronStats | null }) {
           <div className="mission-callout"><span>★</span><p>SPREAD THE MEME.<br />STRENGTHEN THE BRAND.<br />MAKE {siteConfig.token} RECOGNIZABLE.</p></div>
           <div className="hero-buttons">
             <a href="#recruits" className="button button-olive">VIEW RECRUITS</a>
-            <LaunchMyNftMint />
+            <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold">MINT ON LAUNCHMYNFT</a>
             <a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer" className="button button-paper">GET {siteConfig.token}</a>
           </div>
           <ContractAddress />
