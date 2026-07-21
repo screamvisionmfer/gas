@@ -16,6 +16,9 @@ export type OwnedNft = {
   mint: string;
   name: string;
   image: string;
+  attributes?: Attribute[];
+  rarityScore?: number;
+  rarityRank?: number;
 };
 
 export type Rank = {
@@ -30,6 +33,7 @@ export type SquadronResult = {
   wallet: string;
   count: number;
   ownedNfts: OwnedNft[];
+  bestRecruit?: OwnedNft | null;
   rank: Rank;
   unitName: string;
   nextRank?: Rank;

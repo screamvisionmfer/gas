@@ -1,4 +1,5 @@
 import { siteConfig } from "./site-config";
+import type { Attribute } from "./types";
 
 type DasFile = {
   uri?: string;
@@ -10,7 +11,12 @@ export type DasAsset = {
   id: string;
   burnt?: boolean;
   content?: {
-    metadata?: { name?: string };
+    metadata?: {
+      name?: string;
+      attributes?: Attribute[];
+      rarity_score?: number | string;
+      rarityScore?: number | string;
+    };
     files?: DasFile[];
     links?: { image?: string };
   };
@@ -101,4 +107,26 @@ export function assetImage(asset: DasAsset) {
   const files = asset.content?.files ?? [];
   const image = files.find((file) => file.mime?.startsWith("image/")) ?? files[0];
   return image?.cdn_uri ?? image?.uri ?? asset.content?.links?.image ?? "/logo.png";
+}
+
+export function assetAttributes(asset: DasAsset) {
+  const attributes = asset.content?.metadata?.attributes;
+  return Array.isArray(attributes)
+    ? attributes.filter((attribute) => attribute && typeof attribute.trait_type === "string" && (typeof attribute.value === "string" || typeof attribute.value === "number"))
+    : [];
+}
+
+function metadataNumber(value: unknown) {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function assetRarityScore(asset: DasAsset) {
+  const metadata = asset.content?.metadata;
+  return metadataNumber(metadata?.rarity_score ?? metadata?.rarityScore);
+}
+
+export function assetRarityRank(asset: DasAsset) {
+  const rarityAttribute = assetAttributes(asset).find((attribute) => attribute.trait_type.toLowerCase() === "rarity rank");
+  return metadataNumber(rarityAttribute?.value);
 }

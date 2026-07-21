@@ -20,12 +20,12 @@ npm run build
 
 ## Site configuration
 
-Edit `lib/site-config.ts` to update the project links, token contract, supply, deployed statistics, roadmap statuses, creator name, and fallback site URL. Repeated project values are centralized there.
+Edit `lib/site-config.ts` to update project links, token and collection addresses, roadmap statuses, site URL, and X-banner dimensions/labels. Repeated project values are centralized there.
 
 Copy `.env.example` to `.env.local` and fill in server-only values:
 
 ```env
-NFT_API_KEY=
+HELIUS_API_KEY=
 COLLECTION_ADDRESS=
 NEXT_PUBLIC_SITE_URL=https://your-domain.example
 ```
@@ -58,7 +58,30 @@ The 12 editable rank thresholds and image paths live in `lib/ranks.ts`; Supreme 
 
 `app/api/verify-squadron/route.ts` accepts a Solana wallet and returns the typed `SquadronResult`. All external API work belongs in `lib/nft-verification.ts` so keys remain off the client.
 
-The repository currently uses a deterministic mock result because the existing Bobros Cartel endpoint and response schema were not supplied. Replace only the documented TODO block with the real request, filter NFTs by `COLLECTION_ADDRESS`, map them to `OwnedNft[]`, and keep the route response shape unchanged.
+The server uses Helius DAS on Solana mainnet and filters assets by `COLLECTION_ADDRESS`. `HELIUS_API_KEY` remains server-only. The verification result includes up to five preview assets plus a separately selected `bestRecruit` calculated across every matching NFT in the wallet.
+
+## X banner generator
+
+After a successful wallet scan, **Generate X Banner** opens a responsive preview and downloads an exact 1500 × 500 server-rendered PNG. The browser sends only the wallet and selected visual style; `app/api/twitter-banner/route.tsx` re-checks the wallet through Helius before every render and does not trust rank, count, unit, NFT name, or image data from the client.
+
+Best-recruit selection is deterministic and uses this order:
+
+1. highest on-chain `rarity_score` / `rarityScore`, when supplied by collection metadata;
+2. lowest positive on-chain `Rarity Rank` attribute;
+3. highest project-defined trait weight from `lib/banner-config.ts`;
+4. first verified collection NFT as a safe fallback.
+
+No external rarity is invented. Edit `traitWeights` in `lib/banner-config.ts` to change the project fallback. The same file contains the clean and tactical palettes; add a new style there, extend the `BannerStyle` type and its validation, then add its visual branch in the banner route. Dimensions, website label, tagline, and default style live in `siteConfig.banner`.
+
+NFT image URLs are normalized in `lib/banner-images.ts`. IPFS links are converted to the public IPFS gateway, only HTTPS hosts in the explicit allowlist are accepted, and missing/invalid images fall back to `public/logo.png`. Rank art and the logo are read from local files during rendering.
+
+Local API example (requires `.env.local`):
+
+```text
+http://localhost:3000/api/twitter-banner?wallet=YOUR_SOLANA_WALLET&style=clean
+```
+
+The response is a real PNG produced by the server-side `sharp` renderer with the bundled Top Secret C and Operation Napalm fonts. The renderer converts text to font-derived SVG paths, decodes and resizes the verified logo/rank/recruit images, then composites every layer into the final PNG. It does not use DOM screenshots, Puppeteer, or Playwright.
 
 ## Share cards
 

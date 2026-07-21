@@ -16,6 +16,14 @@ export const siteConfig = {
   creatorTwitterUrl: "https://x.com/scream_vision",
   siteUrl: "https://groypersquadron.xyz",
   canonicalUrl: "https://www.groypersquadron.xyz",
+  banner: {
+    width: 1500,
+    height: 500,
+    defaultStyle: "clean" as const,
+    websiteLabel: "groypersquadron.xyz",
+    tagline: "THE TOKEN IS THE SIGNAL. THE SQUADRON IS THE AMPLIFIER.",
+    logoPath: "/logo.png",
+  },
   roadmap: [
     { phase: "01", title: "ESTABLISH THE UNIT", status: "COMPLETED", state: "complete" },
     { phase: "02", title: "DEPLOY THE SQUADRON", status: "COMPLETED", state: "complete" },

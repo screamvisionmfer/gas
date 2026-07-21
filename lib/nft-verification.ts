@@ -1,5 +1,6 @@
 import { nextRankForCount, rankForCount } from "./ranks";
-import { assetImage, assetName, getWalletCollectionAssets } from "./helius";
+import { assetAttributes, assetImage, assetName, assetRarityRank, assetRarityScore, getWalletCollectionAssets } from "./helius";
+import { getBestRecruit } from "./best-recruit";
 import type { OwnedNft, SquadronResult } from "./types";
 
 export function isSolanaAddress(value: string) {
@@ -13,16 +14,21 @@ export async function verifySquadron(wallet: string): Promise<SquadronResult> {
   const count = collectionAssets.total;
   const rank = rankForCount(count);
   const nextRank = nextRankForCount(count);
-  const ownedNfts: OwnedNft[] = collectionAssets.items.slice(0, 5).map((asset) => ({
+  const allOwnedNfts: OwnedNft[] = collectionAssets.items.map((asset) => ({
     mint: asset.id,
     name: assetName(asset),
     image: assetImage(asset),
+    attributes: assetAttributes(asset),
+    rarityScore: assetRarityScore(asset),
+    rarityRank: assetRarityRank(asset),
   }));
+  const bestRecruit = getBestRecruit(allOwnedNfts);
 
   return {
     wallet,
     count,
-    ownedNfts,
+    ownedNfts: allOwnedNfts.slice(0, 5),
+    bestRecruit,
     rank,
     unitName: rank.unitName,
     nextRank,

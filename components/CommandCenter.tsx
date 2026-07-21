@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { isSolanaAddress } from "@/lib/nft-verification";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
 import type { SquadronResult } from "@/lib/types";
+import { BannerGenerator } from "@/components/banner/BannerGenerator";
 
 function shortenWallet(wallet: string) {
   return `${wallet.slice(0, 5)}…${wallet.slice(-5)}`;
@@ -50,7 +51,7 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape" && !document.querySelector(".banner-modal-backdrop")) onClose();
     }
     window.addEventListener("keydown", closeOnEscape);
     return () => {
@@ -304,6 +305,8 @@ function RankReveal({ result, onClose }: { result: SquadronResult; onClose: () =
             <div>{result.ownedNfts.map((nft, index) => <motion.div key={nft.mint} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + index * 0.08 }}><img src={nft.image} width="58" height="58" alt={nft.name} loading="lazy" /></motion.div>)}</div>
           </div>
         )}
+
+        <BannerGenerator result={result} />
 
         <div className="rank-reveal-actions">
           <button className="button button-gold" type="button" onClick={saveReport} disabled={saving}>{saveFailed ? "EXPORT FAILED" : saving ? "GENERATING PNG..." : "SAVE REPORT"}</button>
