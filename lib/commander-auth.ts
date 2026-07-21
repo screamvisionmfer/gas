@@ -15,14 +15,12 @@ function production() {
 function password() {
   const configured = process.env.COMMANDER_HQ_PASSWORD;
   if (configured) return configured;
-  if (!production()) return "1337";
   throw new Error("COMMANDER_HQ_PASSWORD is not configured.");
 }
 
 function sessionSecret() {
   const configured = process.env.COMMANDER_HQ_SESSION_SECRET;
   if (configured && configured.length >= 32) return configured;
-  if (!production()) return "gas-commander-hq-development-secret-only";
   throw new Error("COMMANDER_HQ_SESSION_SECRET is not configured or is too short.");
 }
 
@@ -75,4 +73,3 @@ export function commanderCookieOptions() {
     maxAge: COMMANDER_SESSION_MAX_AGE,
   };
 }
-

@@ -96,9 +96,11 @@ The response is a real PNG produced by the server-side `sharp` renderer with the
 `/commander-hq` is protected on the server. Unauthenticated responses contain only the access terminal; the dashboard data and components are not rendered until the signed session cookie has been verified. Add both values to every Vercel environment that should expose the page:
 
 ```env
-COMMANDER_HQ_PASSWORD=1337
-COMMANDER_HQ_SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters-long
+COMMANDER_HQ_PASSWORD=
+COMMANDER_HQ_SESSION_SECRET=
 ```
+
+Keep the real values only in `.env.local` and the Vercel environment settings. Never commit an access code or session secret.
 
 The session cookie is HTTP-only, `SameSite=Lax`, secure in production, and valid for seven days. `LOCK TERMINAL` invalidates it immediately.
 
