@@ -11,6 +11,6 @@ class MockCommanderDataProvider implements CommanderDataProvider {
   }
 }
 
-// Replace this provider with a Privy + Helius implementation without changing the UI components.
+// Profile and intelligence panels remain replaceable simulation data.
+// Army ownership is loaded independently through the existing server-side verification API.
 export const commanderDataProvider: CommanderDataProvider = new MockCommanderDataProvider();
-

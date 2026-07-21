@@ -4,18 +4,8 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Footer, Header } from "./LandingPage";
 import { materialsCatalog, requirementLabel } from "@/lib/materials-catalog";
+import { connectReadOnlySolanaWallet } from "@/lib/solana-wallet";
 import styles from "./MaterialsPage.module.css";
-
-type WalletProvider = {
-  connect: (options?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: { toString: () => string } }>;
-};
-
-declare global {
-  interface Window {
-    solana?: WalletProvider;
-    phantom?: { solana?: WalletProvider };
-  }
-}
 
 type AccessResult = {
   wallet: string;
@@ -71,19 +61,14 @@ export function MaterialsPage() {
   }
 
   async function connectReadOnly() {
-    const provider = window.phantom?.solana ?? window.solana;
-    if (!provider) {
-      setError("No compatible Solana wallet extension found. Paste a public wallet address instead.");
-      return;
-    }
     setError("");
     try {
-      const connection = await provider.connect();
-      const address = connection.publicKey.toString();
+      const { address } = await connectReadOnlySolanaWallet();
       setWallet(address);
       await inspectWallet(address);
-    } catch {
-      setError("Wallet connection was cancelled. No signature or transaction was requested.");
+    } catch (connectionError) {
+      const message = connectionError instanceof Error ? connectionError.message : "Wallet connection was cancelled.";
+      setError(`${message} No signature or transaction was requested.`);
     }
   }
 
@@ -176,4 +161,3 @@ export function MaterialsPage() {
     </main>
   );
 }
-

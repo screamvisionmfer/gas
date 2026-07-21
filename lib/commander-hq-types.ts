@@ -31,13 +31,14 @@ export type CommanderProfile = {
   avatarUrl?: string;
   rank: string;
   rankImage: string;
+  rankUnit: string;
   armySize: number;
   commanderScore: number;
   memberSince: string;
   nextRank?: string;
   soldiersNeeded?: number;
   rankProgress: number;
-  primarySoldier: Soldier;
+  primarySoldier?: Soldier;
 };
 
 export type TreasuryData = {
@@ -91,6 +92,5 @@ export type CommanderDashboardData = {
   market: MarketData;
   medals: Medal[];
   achievements: Achievement[];
-  dataMode: "mock" | "live";
+  dataMode: "mock" | "hybrid" | "live";
 };
-

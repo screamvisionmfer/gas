@@ -51,6 +51,7 @@
 .heroActions button { min-height: 44px; border: 1px solid #4d533c; padding: 7px; background: #242d18; color: #e5e2d6; font: 10px var(--heading); cursor: pointer; }
 .heroActions button:first-child { background: #11150e; }
 .heroActions button:last-child { border-color: #bd972c; background: #d7ab2c; color: #11130d; }
+.heroActions button:disabled { cursor: wait; opacity: .62; }
 .heroNotice { min-height: 14px; margin: 7px 0 -12px; color: #6b793e; font: 8px var(--heading); text-align: center; }
 .rankPanel { overflow: hidden; background: radial-gradient(circle at 50% 37%, rgba(135,169,40,.18), transparent 31%), linear-gradient(145deg, #18210f, #090d07); color: #ebe7da; }
 .rankPanel::before { content: ""; position: absolute; inset: 14px; border: 1px solid rgba(165,148,78,.21); pointer-events: none; }
@@ -97,6 +98,15 @@
 .sectionButton { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; margin-top: 17px; border: 1px solid #4c523a; padding: 0 17px; background: #252d1a; color: #eeeadd; font: 10px var(--heading); text-decoration: none; }
 .emptyState { margin-top: 18px; border: 1px dashed #7a7d69; padding: 45px 20px; color: #686d57; text-align: center; }
 .emptyState strong { font: 20px var(--heading); }.emptyState p { margin: 7px 0 0; }
+.sectionActions { display: flex; flex-wrap: wrap; gap: 9px; }
+.refreshButton { cursor: pointer; }
+.refreshButton:disabled { cursor: wait; opacity: .58; }
+.armyLoading > span { width: min(280px, 80%); height: 5px; display: block; overflow: hidden; margin: 15px auto 4px; background: #c9c6b8; }
+.armyLoading > span::after { content: ""; width: 38%; height: 100%; display: block; background: #8baa32; animation: armyScan 1.15s ease-in-out infinite alternate; }
+@keyframes armyScan { from { transform: translateX(-100%); } to { transform: translateX(265%); } }
+.armyError { border-color: #9b653a; color: #754422; }
+.armyInlineError, .armyRefreshStatus { margin: 15px 0 0; border: 1px solid #8f6b3c; padding: 9px 12px; background: #ede3cc; color: #72451f; font: 8px var(--heading); letter-spacing: 1px; }
+.armyRefreshStatus { border-color: #78804d; background: #e1e2cc; color: #5f6f2e; }
 
 .treasurySection { display: grid; grid-template-columns: 1fr 1fr; padding: 0; background: #11160d; color: #eeeadd; }
 .treasuryPane, .provisionsPane { position: relative; min-width: 0; padding: 30px; }
@@ -156,5 +166,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bootLine i { animation: none; }
+  .bootLine i, .armyLoading > span::after { animation: none; }
 }

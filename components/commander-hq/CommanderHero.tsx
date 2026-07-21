@@ -9,7 +9,16 @@ function shortAddress(address: string) {
   return `${address.slice(0, 6)}…${address.slice(-6)}`;
 }
 
-export function CommanderHero({ commander, identity }: { commander: CommanderProfile; identity: CommanderIdentity }) {
+type CommanderHeroProps = {
+  commander: CommanderProfile;
+  identity: CommanderIdentity;
+  onConnectWallet: () => void;
+  walletBusy: boolean;
+  walletConnected: boolean;
+  walletNotice: string;
+};
+
+export function CommanderHero({ commander, identity, onConnectWallet, walletBusy, walletConnected, walletNotice }: CommanderHeroProps) {
   const [notice, setNotice] = useState("");
   const twitter = identity.twitter;
   const primaryWallet = identity.linkedWallets.find((wallet) => wallet.isPrimary) ?? identity.linkedWallets[0];
@@ -35,23 +44,30 @@ export function CommanderHero({ commander, identity }: { commander: CommanderPro
           <span>{primaryWallet ? "PRIMARY SOLANA WALLET" : "NO WALLET CONNECTED"}</span>
           <strong>{primaryWallet ? shortAddress(primaryWallet.address) : "AWAITING LINK"}</strong>
         </div>
-        <div className={styles.primaryRecruit}>
-          <img src={commander.primarySoldier.image} alt={commander.primarySoldier.name} />
-          <div><small>SELECTED FIELD OPERATIVE</small><strong>{commander.primarySoldier.name}</strong><span>{commander.primarySoldier.rank} · RARITY {commander.primarySoldier.rarity}</span></div>
-        </div>
+        {commander.primarySoldier ? (
+          <div className={styles.primaryRecruit}>
+            <img src={commander.primarySoldier.image} alt={commander.primarySoldier.name} />
+            <div><small>SELECTED FIELD OPERATIVE</small><strong>{commander.primarySoldier.name}</strong><span>{commander.primarySoldier.rank ?? "GAS RECRUIT"} · RARITY {commander.primarySoldier.rarity ?? "UNRANKED"}</span></div>
+          </div>
+        ) : (
+          <div className={styles.primaryRecruit}>
+            <img src="/logo.png" alt="" />
+            <div><small>SELECTED FIELD OPERATIVE</small><strong>AWAITING WALLET SCAN</strong><span>NO ON-CHAIN PERSONNEL LOADED</span></div>
+          </div>
+        )}
         <div className={styles.heroActions}>
           <button type="button" onClick={() => comingSoon("CONNECT X")}>CONNECT X</button>
-          <button type="button" onClick={() => comingSoon("CONNECT WALLET")}>CONNECT WALLET</button>
+          <button type="button" onClick={onConnectWallet} disabled={walletBusy}>{walletBusy ? "SCANNING WALLET..." : walletConnected ? "CHANGE WALLET" : "CONNECT WALLET"}</button>
           <button type="button" onClick={() => comingSoon("SHARE COMMANDER CARD")}>SHARE COMMANDER CARD</button>
         </div>
-        <p className={styles.heroNotice} aria-live="polite">{notice}</p>
+        <p className={styles.heroNotice} aria-live="polite">{notice || walletNotice}</p>
       </div>
 
       <div className={styles.rankPanel}>
         <span className={styles.rankKicker}>CURRENT CLASSIFICATION</span>
         <div className={styles.rankCore}>
           <img src={commander.rankImage} alt={`${commander.rank} insignia`} />
-          <div><h2>{commander.rank}</h2><p>ALPHA COMMAND</p></div>
+          <div><h2>{commander.rank}</h2><p>{commander.rankUnit}</p></div>
         </div>
         <div className={styles.rankMetrics}>
           <div><small>ACTIVE SOLDIERS</small><strong>{commander.armySize}</strong></div>
@@ -67,4 +83,3 @@ export function CommanderHero({ commander, identity }: { commander: CommanderPro
     </section>
   );
 }
-

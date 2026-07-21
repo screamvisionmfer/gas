@@ -104,7 +104,7 @@ Keep the real values only in `.env.local` and the Vercel environment settings. N
 
 The session cookie is HTTP-only, `SameSite=Lax`, secure in production, and valid for seven days. `LOCK TERMINAL` invalidates it immediately.
 
-The current dashboard provider is intentionally isolated in `lib/commander-hq-provider.ts` and returns clearly labelled simulation data. Replace that adapter with Privy/Helius and a market-data provider without changing the dashboard components.
+The profile, treasury, provisions, market, medals, and achievements provider is intentionally isolated in `lib/commander-hq-provider.ts` and still returns clearly labelled simulation data. Commander HQ Army data is live: its read-only wallet connection calls the existing `/api/verify-squadron` route, which keeps the Helius key server-side, filters the configured GAS collection, and applies the shared rank thresholds. No signing request, Privy account, or embedded wallet is used.
 
 Failed access attempts are limited to five per IP for ten minutes. The initial implementation keeps that state in server memory, which is suitable for local development and a single long-lived process but is not globally consistent across Vercel serverless instances. Before wider release, move the limiter to a shared store such as Vercel KV/Upstash Redis.
 

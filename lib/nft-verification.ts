@@ -7,7 +7,11 @@ export function isSolanaAddress(value: string) {
   return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
 }
 
-export async function verifySquadron(wallet: string): Promise<SquadronResult> {
+type VerifySquadronOptions = {
+  nftLimit?: number;
+};
+
+export async function verifySquadron(wallet: string, options: VerifySquadronOptions = {}): Promise<SquadronResult> {
   if (!isSolanaAddress(wallet)) throw new Error("Enter a valid Solana wallet address.");
 
   const collectionAssets = await getWalletCollectionAssets(wallet);
@@ -23,11 +27,13 @@ export async function verifySquadron(wallet: string): Promise<SquadronResult> {
     rarityRank: assetRarityRank(asset),
   }));
   const bestRecruit = getBestRecruit(allOwnedNfts);
+  const requestedLimit = Number.isFinite(options.nftLimit) ? Math.floor(options.nftLimit ?? 5) : 5;
+  const nftLimit = Math.min(1000, Math.max(0, requestedLimit));
 
   return {
     wallet,
     count,
-    ownedNfts: allOwnedNfts.slice(0, 5),
+    ownedNfts: allOwnedNfts.slice(0, nftLimit),
     bestRecruit,
     rank,
     unitName: rank.unitName,
