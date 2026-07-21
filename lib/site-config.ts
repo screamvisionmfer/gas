@@ -1,10 +1,12 @@
+import { groyperConfig } from "./groyper-config";
+
 export const siteConfig = {
   name: "Groypers Alpha Squadron",
   abbreviation: "GAS",
   token: "$GROYPER",
   supply: 777,
   network: "Solana",
-  contractAddress: "44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  contractAddress: groyperConfig.tokenMint,
   collectionAddress: "DS54gL9wUofvjd9V7iVmMWk1Pwx2vf4G4mW1Kci6t239",
   twitterUrl: "https://x.com/GroyperPump",
   discordUrl: "",
@@ -16,9 +18,9 @@ export const siteConfig = {
     stylesheetUrl: "https://storage.googleapis.com/scriptslmt/0.1.3/solana.css",
   },
   knowYourMemeUrl: "https://knowyourmeme.com/memes/groyper",
-  tokenUrl: "https://swap.pump.fun/?input=So11111111111111111111111111111111111111112&output=44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  tokenUrl: `https://swap.pump.fun/?input=So11111111111111111111111111111111111111112&output=${groyperConfig.tokenMint}`,
   tokenWebsiteUrl: "https://groyperpump.fun/",
-  dexScreenerUrl: "https://dexscreener.com/solana/44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
+  dexScreenerUrl: groyperConfig.dexScreenerUrl,
   creatorName: "Screamvision",
   creatorTwitterUrl: "https://x.com/scream_vision",
   siteUrl: "https://groypersquadron.xyz",

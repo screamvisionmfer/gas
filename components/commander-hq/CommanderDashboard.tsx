@@ -3,8 +3,6 @@
 import type { CommanderDashboardData } from "@/lib/commander-hq-types";
 import { Header, Footer } from "@/components/LandingPage";
 import { CommanderArmyController } from "./CommanderArmyController";
-import { TreasurySection } from "./TreasurySection";
-import { MarketIntelSection } from "./MarketIntelSection";
 import { MedalsSection } from "./MedalsSection";
 import { QuickActions } from "./QuickActions";
 import styles from "./CommanderHQ.module.css";
@@ -16,11 +14,9 @@ export function CommanderDashboard({ data }: { data: CommanderDashboardData }) {
       <div className={styles.commanderShell}>
         <div className={styles.commanderMasthead}>
           <span>GAS PERSONNEL NETWORK / PRIVATE COMMAND NODE</span>
-          <b>{data.dataMode === "live" ? "LIVE ON-CHAIN DATA" : data.dataMode === "hybrid" ? "LIVE ARMY / SIMULATION INTEL" : "SIMULATION DATA"}</b>
+          <b>{data.dataMode === "live" ? "LIVE ON-CHAIN DATA" : data.dataMode === "hybrid" ? "LIVE ARMY + MARKET / SIMULATION PROFILE" : "SIMULATION DATA"}</b>
         </div>
-        <CommanderArmyController commander={data.commander} identity={data.identity} />
-        <TreasurySection treasury={data.treasury} provisions={data.provisions} />
-        <MarketIntelSection market={data.market} />
+        <CommanderArmyController commander={data.commander} identity={data.identity} treasury={data.treasury} />
         <MedalsSection medals={data.medals} achievements={data.achievements} />
         <QuickActions />
       </div>

@@ -30,10 +30,22 @@ type ParsedTokenAccount = {
     data?: {
       parsed?: {
         info?: {
-          tokenAmount?: { uiAmountString?: string; uiAmount?: number };
+          tokenAmount?: {
+            amount?: string;
+            decimals?: number;
+            uiAmountString?: string;
+            uiAmount?: number;
+          };
         };
       };
     };
+  };
+};
+
+type TokenSupply = {
+  value?: {
+    amount?: string;
+    decimals?: number;
   };
 };
 
@@ -77,18 +89,53 @@ async function heliusRpc<T>(method: string, params: unknown): Promise<T> {
   return payload.result;
 }
 
-export async function getFungibleTokenBalance(ownerAddress: string, mintAddress: string) {
+export type FungibleTokenBalance = {
+  walletAddress: string;
+  mint: string;
+  rawAmount: string;
+  decimals: number;
+  uiAmount: number;
+};
+
+function safeRawAmount(value: string | undefined) {
+  return value && /^\d+$/.test(value) ? BigInt(value) : BigInt(0);
+}
+
+export async function getFungibleTokenBalanceDetails(ownerAddress: string, mintAddress: string): Promise<FungibleTokenBalance> {
   const result = await heliusRpc<{ value?: ParsedTokenAccount[] }>("getTokenAccountsByOwner", [
     ownerAddress,
     { mint: mintAddress },
     { encoding: "jsonParsed", commitment: "confirmed" },
   ]);
 
-  return (result.value ?? []).reduce((total, item) => {
+  const accounts = result.value ?? [];
+  let rawAmount = BigInt(0);
+  let decimals: number | undefined;
+
+  for (const item of accounts) {
     const tokenAmount = item.account?.data?.parsed?.info?.tokenAmount;
-    const balance = Number(tokenAmount?.uiAmountString ?? tokenAmount?.uiAmount ?? 0);
-    return total + (Number.isFinite(balance) ? balance : 0);
-  }, 0);
+    rawAmount += safeRawAmount(tokenAmount?.amount);
+    if (Number.isInteger(tokenAmount?.decimals) && (tokenAmount?.decimals ?? -1) >= 0) decimals = tokenAmount?.decimals;
+  }
+
+  if (decimals === undefined) {
+    const supply = await heliusRpc<TokenSupply>("getTokenSupply", [mintAddress, { commitment: "confirmed" }]);
+    decimals = Number.isInteger(supply.value?.decimals) ? supply.value?.decimals : 0;
+  }
+
+  const resolvedDecimals = decimals ?? 0;
+  const uiAmount = Number(rawAmount) / (10 ** resolvedDecimals);
+  return {
+    walletAddress: ownerAddress,
+    mint: mintAddress,
+    rawAmount: rawAmount.toString(),
+    decimals: resolvedDecimals,
+    uiAmount: Number.isFinite(uiAmount) ? uiAmount : 0,
+  };
+}
+
+export async function getFungibleTokenBalance(ownerAddress: string, mintAddress: string) {
+  return (await getFungibleTokenBalanceDetails(ownerAddress, mintAddress)).uiAmount;
 }
 
 export async function getCollectionAssets() {

@@ -30,27 +30,8 @@ export const mockCommanderDashboard: CommanderDashboardData = {
     investedUsd: 22608.26,
     realizedPnlUsd: 12430.12,
     unrealizedPnlUsd: 7892.33,
-  },
-  provisions: {
-    tokenBalance: 143221,
-    tokenPriceUsd: 0.02941,
-    tokenValueUsd: 4210.15,
-    averageEntryUsd: 0.01723,
-    change24hPercent: 12.45,
-  },
-  market: {
-    tokenPriceUsd: 0.02941,
-    change24hPercent: 12.45,
-    marketCapUsd: 29410000,
-    liquidityUsd: 1640000,
-    volume24hUsd: 883500,
-    holders: 11842,
-    chart: {
-      "1H": [2.61, 2.64, 2.62, 2.68, 2.71, 2.69, 2.76, 2.81, 2.86, 2.94],
-      "24H": [2.19, 2.24, 2.21, 2.32, 2.29, 2.41, 2.38, 2.55, 2.61, 2.58, 2.73, 2.94],
-      "7D": [1.72, 1.89, 1.84, 2.02, 1.96, 2.17, 2.11, 2.34, 2.29, 2.63, 2.52, 2.94],
-      "30D": [0.91, 1.12, 1.04, 1.28, 1.54, 1.47, 1.83, 1.69, 2.06, 2.31, 2.18, 2.94],
-    },
+    // Simulation-only portfolio input. This is not derived from the connected wallet yet.
+    averageBuyPriceUsd: 0.01723,
   },
   medals: [
     { id: "first-wave", name: "First Wave", code: "01", unlocked: true },

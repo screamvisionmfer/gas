@@ -1,11 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { OwnedNft, SquadronResult } from "@/lib/types";
-import type { CommanderIdentity, CommanderProfile, Soldier } from "@/lib/commander-hq-types";
+import type {
+  CommanderIdentity,
+  CommanderProfile,
+  GroyperMarketData,
+  GroyperMarketResponse,
+  GroyperTokenBalance,
+  LiveDataStatus,
+  MarketChartPoint,
+  Soldier,
+  TreasuryData,
+} from "@/lib/commander-hq-types";
 import { connectReadOnlySolanaWallet, type SolanaWalletName } from "@/lib/solana-wallet";
 import { CommanderHero } from "./CommanderHero";
 import { ArmySection, type ArmyLoadStatus } from "./ArmySection";
+import { TreasurySection } from "./TreasurySection";
+import { MarketIntelSection } from "./MarketIntelSection";
 
 function traitValue(nft: OwnedNft, traitName: string) {
   return nft.attributes?.find((attribute) => attribute.trait_type.toLowerCase() === traitName.toLowerCase())?.value;
@@ -55,20 +67,45 @@ function disconnectedCommander(commander: CommanderProfile): CommanderProfile {
   };
 }
 
-export function CommanderArmyController({ commander, identity }: { commander: CommanderProfile; identity: CommanderIdentity }) {
+function requestAborted(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+function liveDataError(code: string | undefined, fallback: string) {
+  if (code === "COMMANDER_SESSION_REQUIRED") return "COMMAND SESSION EXPIRED — RELOAD HQ";
+  if (code === "INVALID_WALLET_ADDRESS") return "CONNECTED WALLET ADDRESS IS INVALID";
+  if (code === "TOKEN_BALANCE_UNAVAILABLE") return "TOKEN BALANCE SERVICE IS TEMPORARILY UNAVAILABLE";
+  if (code === "MARKET_DATA_UNAVAILABLE") return "MARKET INTELLIGENCE IS TEMPORARILY UNAVAILABLE";
+  return fallback;
+}
+
+type CommanderArmyControllerProps = {
+  commander: CommanderProfile;
+  identity: CommanderIdentity;
+  treasury: TreasuryData;
+};
+
+export function CommanderArmyController({ commander, identity, treasury }: CommanderArmyControllerProps) {
   const [wallet, setWallet] = useState("");
   const [walletName, setWalletName] = useState<SolanaWalletName | null>(null);
   const [result, setResult] = useState<SquadronResult | null>(null);
   const [status, setStatus] = useState<ArmyLoadStatus>("idle");
   const [error, setError] = useState("");
-  const activeRequest = useRef<AbortController | null>(null);
+  const [balance, setBalance] = useState<GroyperTokenBalance | null>(null);
+  const [provisionsStatus, setProvisionsStatus] = useState<LiveDataStatus>("idle");
+  const [provisionsError, setProvisionsError] = useState("");
+  const [market, setMarket] = useState<GroyperMarketData | null>(null);
+  const [chart24h, setChart24h] = useState<MarketChartPoint[]>([]);
+  const [marketStatus, setMarketStatus] = useState<LiveDataStatus>("idle");
+  const [marketError, setMarketError] = useState("");
+  const armyRequest = useRef<AbortController | null>(null);
+  const provisionsRequest = useRef<AbortController | null>(null);
+  const marketRequest = useRef<AbortController | null>(null);
 
-  useEffect(() => () => activeRequest.current?.abort(), []);
-
-  async function loadArmy(address: string) {
-    activeRequest.current?.abort();
+  const loadArmy = useCallback(async (address: string) => {
+    armyRequest.current?.abort();
     const controller = new AbortController();
-    activeRequest.current = controller;
+    armyRequest.current = controller;
     setStatus("loading");
     setError("");
 
@@ -85,26 +122,100 @@ export function CommanderArmyController({ commander, identity }: { commander: Co
       setResult(payload);
       setStatus(payload.count > 0 ? "ready" : "empty");
     } catch (scanError) {
-      if (scanError instanceof DOMException && scanError.name === "AbortError") return;
+      if (requestAborted(scanError)) return;
       setError(scanError instanceof Error ? scanError.message : "Unable to inspect this wallet.");
       setStatus("error");
     } finally {
-      if (activeRequest.current === controller) activeRequest.current = null;
+      if (armyRequest.current === controller) armyRequest.current = null;
     }
-  }
+  }, []);
+
+  const loadProvisions = useCallback(async (address: string) => {
+    provisionsRequest.current?.abort();
+    const controller = new AbortController();
+    provisionsRequest.current = controller;
+    setProvisionsStatus("loading");
+    setProvisionsError("");
+
+    try {
+      const response = await fetch("/api/commander-hq/provisions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wallet: address }),
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      const payload = await response.json() as GroyperTokenBalance & { error?: string };
+      if (!response.ok) throw new Error(liveDataError(payload.error, "Unable to inspect $GROYPER provisions."));
+      setBalance(payload);
+      setProvisionsStatus("ready");
+    } catch (balanceError) {
+      if (requestAborted(balanceError)) return;
+      setProvisionsError(balanceError instanceof Error ? balanceError.message : "Unable to inspect $GROYPER provisions.");
+      setProvisionsStatus("error");
+    } finally {
+      if (provisionsRequest.current === controller) provisionsRequest.current = null;
+    }
+  }, []);
+
+  const loadMarket = useCallback(async (forceRefresh = false) => {
+    marketRequest.current?.abort();
+    const controller = new AbortController();
+    marketRequest.current = controller;
+    setMarketStatus("loading");
+    setMarketError("");
+
+    try {
+      const response = await fetch(`/api/commander-hq/market${forceRefresh ? "?refresh=1" : ""}`, {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      const payload = await response.json() as GroyperMarketResponse & { error?: string };
+      if (!response.ok) throw new Error(liveDataError(payload.error, "Unable to receive market intelligence."));
+      setMarket(payload.market);
+      setChart24h(payload.chart24h);
+      setMarketStatus("ready");
+    } catch (marketLoadError) {
+      if (requestAborted(marketLoadError)) return;
+      setMarketError(marketLoadError instanceof Error ? marketLoadError.message : "Unable to receive market intelligence.");
+      setMarketStatus("error");
+    } finally {
+      if (marketRequest.current === controller) marketRequest.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialMarketRequest = window.setTimeout(() => void loadMarket(), 0);
+    return () => {
+      window.clearTimeout(initialMarketRequest);
+      armyRequest.current?.abort();
+      provisionsRequest.current?.abort();
+      marketRequest.current?.abort();
+    };
+  }, [loadMarket]);
 
   async function connectWallet() {
     setStatus("connecting");
     setError("");
     try {
       const connection = await connectReadOnlySolanaWallet();
+      if (connection.address !== wallet) {
+        setResult(null);
+        setBalance(null);
+      }
       setWallet(connection.address);
       setWalletName(connection.walletName);
-      await loadArmy(connection.address);
+      await Promise.all([loadArmy(connection.address), loadProvisions(connection.address)]);
     } catch (connectionError) {
       setError(connectionError instanceof Error ? connectionError.message : "Wallet connection was cancelled.");
       setStatus("error");
     }
+  }
+
+  function refreshLiveData() {
+    const requests: Promise<void>[] = [loadMarket(true)];
+    if (wallet) requests.push(loadProvisions(wallet));
+    void Promise.all(requests);
   }
 
   const soldiers = useMemo(() => result ? orderedSoldiers(result) : [], [result]);
@@ -143,6 +254,22 @@ export function CommanderArmyController({ commander, identity }: { commander: Co
         error={error}
         walletConnected={Boolean(wallet)}
         onRefresh={() => wallet && loadArmy(wallet)}
+      />
+      <TreasurySection
+        treasury={treasury}
+        balance={balance}
+        market={market}
+        status={provisionsStatus}
+        error={provisionsError}
+        walletConnected={Boolean(wallet)}
+        onRefresh={refreshLiveData}
+      />
+      <MarketIntelSection
+        market={market}
+        chart24h={chart24h}
+        status={marketStatus}
+        error={marketError}
+        onRefresh={refreshLiveData}
       />
     </>
   );

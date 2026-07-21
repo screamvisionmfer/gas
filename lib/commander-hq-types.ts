@@ -48,25 +48,41 @@ export type TreasuryData = {
   investedUsd: number;
   realizedPnlUsd: number;
   unrealizedPnlUsd: number;
+  averageBuyPriceUsd: number;
 };
 
-export type ProvisionsData = {
-  tokenBalance: number;
-  tokenPriceUsd: number;
-  tokenValueUsd: number;
-  averageEntryUsd: number;
-  change24hPercent: number;
+export type GroyperTokenBalance = {
+  walletAddress: string;
+  mint: string;
+  rawAmount: string;
+  decimals: number;
+  uiAmount: number;
 };
 
-export type MarketData = {
-  tokenPriceUsd: number;
-  change24hPercent: number;
-  marketCapUsd: number;
-  liquidityUsd: number;
-  volume24hUsd: number;
-  holders: number;
-  chart: Record<"1H" | "24H" | "7D" | "30D", number[]>;
+export type GroyperMarketData = {
+  priceUsd: number | null;
+  priceChange24hPercent: number | null;
+  liquidityUsd: number | null;
+  volume24hUsd: number | null;
+  marketCapUsd: number | null;
+  fdvUsd: number | null;
+  pairAddress: string | null;
+  dexId: string | null;
+  pairUrl: string | null;
+  updatedAt: string;
 };
+
+export type MarketChartPoint = {
+  timestamp: number;
+  priceUsd: number;
+};
+
+export type GroyperMarketResponse = {
+  market: GroyperMarketData;
+  chart24h: MarketChartPoint[];
+};
+
+export type LiveDataStatus = "idle" | "loading" | "ready" | "error";
 
 export type Medal = {
   id: string;
@@ -88,8 +104,6 @@ export type CommanderDashboardData = {
   commander: CommanderProfile;
   soldiers: Soldier[];
   treasury: TreasuryData;
-  provisions: ProvisionsData;
-  market: MarketData;
   medals: Medal[];
   achievements: Achievement[];
   dataMode: "mock" | "hybrid" | "live";
