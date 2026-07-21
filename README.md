@@ -91,11 +91,26 @@ The response is a real PNG produced by the server-side `sharp` renderer with the
 
 `app/api/share-card/route.tsx` creates the default social preview and a wallet-specific `ImageResponse` when passed `wallet`, `count`, `rank`, and `unit` query parameters.
 
+## Commander HQ
+
+`/commander-hq` is protected on the server. Unauthenticated responses contain only the access terminal; the dashboard data and components are not rendered until the signed session cookie has been verified. Add both values to every Vercel environment that should expose the page:
+
+```env
+COMMANDER_HQ_PASSWORD=1337
+COMMANDER_HQ_SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters-long
+```
+
+The session cookie is HTTP-only, `SameSite=Lax`, secure in production, and valid for seven days. `LOCK TERMINAL` invalidates it immediately.
+
+The current dashboard provider is intentionally isolated in `lib/commander-hq-provider.ts` and returns clearly labelled simulation data. Replace that adapter with Privy/Helius and a market-data provider without changing the dashboard components.
+
+Failed access attempts are limited to five per IP for ten minutes. The initial implementation keeps that state in server memory, which is suitable for local development and a single long-lived process but is not globally consistent across Vercel serverless instances. Before wider release, move the limiter to a shared store such as Vercel KV/Upstash Redis.
+
 ## GitHub and Vercel
 
 1. Commit the repository and push it to GitHub.
 2. Import the repository in Vercel.
-3. Add `NFT_API_KEY`, `COLLECTION_ADDRESS`, and `NEXT_PUBLIC_SITE_URL` in project environment settings.
+3. Add the API, collection, site URL, and Commander HQ variables from `.env.example` in project environment settings.
 4. Deploy. The default build command is `npm run build`.
 
 The default `dev`, `build`, and `start` scripts use Next.js for Vercel. The parallel `dev:sites`, `build:sites`, and `start:sites` scripts preserve the Sites-compatible Vite/vinext deployment path and `.openai/hosting.json`.

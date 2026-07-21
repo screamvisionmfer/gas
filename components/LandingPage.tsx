@@ -17,6 +17,7 @@ const navItems = [
   ["Command Center", "/#command-center"],
   ["Roadmap", "/#roadmap"],
   ["Materials", "/materials"],
+  ["Command HQ", "/commander-hq"],
 ] as const;
 
 export function Header() {

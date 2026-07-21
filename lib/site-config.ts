@@ -12,6 +12,7 @@ export const siteConfig = {
   knowYourMemeUrl: "https://knowyourmeme.com/memes/groyper",
   tokenUrl: "https://swap.pump.fun/?input=So11111111111111111111111111111111111111112&output=44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
   tokenWebsiteUrl: "https://groyperpump.fun/",
+  dexScreenerUrl: "https://dexscreener.com/solana/44eFuquSFU8aC6Nn3LWmNapFn8f5WzwxrYEnJXjspump",
   creatorName: "Screamvision",
   creatorTwitterUrl: "https://x.com/scream_vision",
   siteUrl: "https://groypersquadron.xyz",
