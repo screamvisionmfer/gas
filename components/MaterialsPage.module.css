@@ -70,10 +70,10 @@
 }
 
 @media (max-width: 640px) {
-  .hero { min-height: 540px; display: block; padding: 115px 18px 55px; text-align: center; }
-  .heroCopy h1 { font-size: clamp(62px, 20vw, 88px); }
+  .hero { min-height: 500px; display: block; padding: 108px 18px 48px; text-align: center; }
+  .heroCopy h1 { max-width: 100%; margin-block: 14px 17px; font-size: clamp(43px, 14vw, 58px); line-height: .84; letter-spacing: 0; }
   .heroCopy p { font-size: 17px; }
-  .heroLogo { width: 180px; margin-top: 28px; }
+  .heroLogo { width: 155px; margin-top: 22px; }
   .content { margin-top: -22px; padding: 0 10px 55px; }
   .scanner { gap: 20px; padding: 22px 15px; }
   .scannerIntro h2 { font-size: 27px; }
@@ -98,3 +98,7 @@
   .bannerCard footer a, .bannerCard footer button { text-align: center; }
 }
 
+@media (max-width: 380px) {
+  .heroCopy h1 { font-size: clamp(41px, 13.5vw, 51px); }
+  .heroCopy > span { font-size: 9px; letter-spacing: 1.7px; }
+}
