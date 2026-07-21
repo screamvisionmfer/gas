@@ -16,10 +16,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@privy-io/react-auth": "3.35.1",
+    "@solana-program/memo": "0.8.0",
+    "@solana-program/system": "0.8.0",
+    "@solana-program/token": "0.6.0",
+    "@solana/kit": "3.0.3",
     "framer-motion": "^12.42.2",
     "next": "16.2.6",
     "opentype.js": "^2.0.0",
     "react": "19.2.6",
+    "react-aria": "3.49.0",
     "react-dom": "19.2.6",
     "sharp": "0.34.5"
   },

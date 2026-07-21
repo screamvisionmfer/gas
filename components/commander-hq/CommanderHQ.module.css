@@ -47,11 +47,12 @@
 .primaryRecruit > div { min-width: 0; display: grid; gap: 3px; }
 .primaryRecruit strong { font: 20px var(--heading); }
 .primaryRecruit span { color: #4d5831; font: 9px var(--heading); }
-.heroActions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 16px; }
+.heroActions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin-top: 16px; }
 .heroActions button { min-height: 44px; border: 1px solid #4d533c; padding: 7px; background: #242d18; color: #e5e2d6; font: 10px var(--heading); cursor: pointer; }
 .heroActions button:first-child { background: #11150e; }
 .heroActions button:last-child { border-color: #bd972c; background: #d7ab2c; color: #11130d; }
-.heroActions button:disabled { cursor: wait; opacity: .62; }
+.heroActions button:disabled { cursor: not-allowed; opacity: .62; }
+.heroActions button small { display: block; margin-top: 3px; color: #9ba286; font: 6px var(--heading); }
 .heroNotice { min-height: 14px; margin: 7px 0 -12px; color: #6b793e; font: 8px var(--heading); text-align: center; }
 .rankPanel { overflow: hidden; background: radial-gradient(circle at 50% 37%, rgba(135,169,40,.18), transparent 31%), linear-gradient(145deg, #18210f, #090d07); color: #ebe7da; }
 .rankPanel::before { content: ""; position: absolute; inset: 14px; border: 1px solid rgba(165,148,78,.21); pointer-events: none; }
@@ -165,6 +166,42 @@
 .actionGrid a:first-child { border-color: #c49d2d; background: #d8ac2e; color: #10130c; }.actionGrid button:disabled { cursor: not-allowed; opacity: .48; }.actionGrid button small { display: block; margin-left: 6px; color: #9fa78a; font: 6px var(--heading); }.actionGrid .lockButton { grid-column: span 2; border-color: #7d6233; background: #321c10; color: #e5b86a; }
 .dashboardError { min-height: 560px; display: grid; place-items: center; place-content: center; gap: 10px; border: 1px solid #5c604a; padding: 30px; background: #11160d; color: #e9e5d8; text-align: center; }.dashboardError img { object-fit: contain; }.dashboardError span { color: #9dbb45; font: 9px var(--heading); letter-spacing: 2px; }.dashboardError h1 { margin: 0; color: #deb438; font: clamp(44px, 7vw, 78px)/.85 var(--heading); }.dashboardError p { max-width: 520px; margin: 0; color: #929b7d; }.dashboardError a { margin-top: 12px; border: 1px solid #c49d2d; padding: 13px 20px; background: #d8ac2e; color: #10130c; font: 10px var(--heading); text-decoration: none; }
 
+.identityShell { min-height: 82vh; display: grid; place-items: center; }
+.identityCheckpoint { position: relative; width: min(660px, 100%); overflow: hidden; border: 1px solid #596537; padding: 42px 38px 34px; background: radial-gradient(circle at 50% 25%, rgba(114,153,42,.18), transparent 31%), #0a1007; box-shadow: 0 22px 65px rgba(15,18,10,.28), inset 0 0 0 9px #11180c, inset 0 0 0 10px rgba(154,178,66,.27); color: #e9e5d8; text-align: center; }
+.identityCheckpoint::before { content: ""; position: absolute; inset: 17px; border: 1px solid rgba(177,155,65,.27); pointer-events: none; }
+.identityCheckpoint > img { position: relative; width: 108px; height: 108px; margin: 8px auto 18px; border: 2px solid #718735; padding: 5px; background: #11180c; object-fit: cover; clip-path: polygon(50% 0, 92% 18%, 100% 72%, 72% 100%, 28% 100%, 0 72%, 8% 18%); }
+.identityCheckpoint > span { position: relative; display: block; color: #93ad43; font: 9px var(--heading); letter-spacing: 2px; }
+.identityCheckpoint h1 { position: relative; max-width: 590px; margin: 10px auto 0; color: #dcb338; font: clamp(43px, 7vw, 72px)/.83 var(--heading); text-transform: uppercase; text-shadow: 0 3px #4a380d; }
+.identityCheckpoint > strong { position: relative; display: grid; gap: 3px; margin-top: 20px; color: #eeeadd; font: 18px var(--heading); }
+.identityCheckpoint > strong small { color: #8fa34c; font: 10px var(--body); }
+.identityCheckpoint > p { position: relative; max-width: 500px; margin: 18px auto 0; color: #969f83; font-size: 13px; }
+.identityCheckpoint > button { position: relative; min-width: min(330px, 100%); min-height: 54px; margin-top: 24px; border: 1px solid #d1a62e; background: #dcb22f; color: #0b0f08; box-shadow: inset 0 0 0 2px rgba(255,240,158,.24), 4px 5px 0 #030502; font: 13px var(--heading); cursor: pointer; }
+.identityCheckpoint > button:disabled { cursor: wait; filter: grayscale(.5); opacity: .66; }
+.identityCheckpoint > em { position: relative; min-height: 14px; display: block; margin-top: 14px; color: #dda064; font: 8px var(--heading); font-style: normal; letter-spacing: .8px; }
+.identityCheckpoint > small { position: relative; display: block; margin-top: 20px; color: #576245; font: 7px var(--heading); letter-spacing: 1.4px; }
+.identityRadar { position: absolute; left: 50%; top: 15px; width: 245px; height: 245px; transform: translateX(-50%); border: 1px dashed rgba(140,166,57,.23); border-radius: 50%; }
+.identityRadar::before, .identityRadar::after { content: ""; position: absolute; inset: 25%; border: 1px solid rgba(140,166,57,.16); border-radius: 50%; }
+.identityRadar::after { inset: 49% 0 auto; border: 0; border-top: 1px solid rgba(140,166,57,.13); border-radius: 0; }
+.identityRadar span { position: absolute; inset: 50% 50% auto; width: 47%; height: 1px; transform-origin: left; background: linear-gradient(90deg, rgba(175,210,65,.58), transparent); animation: identitySweep 2.7s linear infinite; }
+@keyframes identitySweep { to { transform: rotate(360deg); } }
+
+.identityLoadingPage { min-height: 100dvh; display: grid; place-items: center; overflow: hidden; padding: 22px; background: radial-gradient(circle at 50% 45%, #1c2b0f, #050904 68%); color: #eae6d9; }
+.identityLoadingPage::before { content: ""; position: fixed; inset: 0; background-image: linear-gradient(rgba(131,158,59,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(131,158,59,.05) 1px, transparent 1px); background-size: 38px 38px; pointer-events: none; }
+.dossier { position: relative; z-index: 2; width: min(720px, 100%); border: 1px solid #8a7730; padding: 26px; background: #0b1108; box-shadow: 0 0 0 8px #050804, 0 0 0 9px rgba(195,164,50,.3), 0 30px 100px #000; }
+.dossier::before { content: "CLASSIFIED / GAS"; position: absolute; right: 34px; bottom: 63px; transform: rotate(-7deg); border: 2px solid rgba(148,69,42,.29); padding: 8px 13px; color: rgba(154,70,42,.34); font: 16px var(--heading); pointer-events: none; }
+.dossierHeader { display: flex; justify-content: space-between; gap: 20px; border-block: 1px solid #46512f; padding: 12px 4px; font: 10px var(--heading); letter-spacing: 1.6px; }
+.dossierHeader span { color: #dcb338; }.dossierHeader b { color: #a6c94a; }
+.dossierBody { display: grid; grid-template-columns: 130px 1fr; gap: 25px; align-items: start; padding: 30px 5px; }
+.dossierBody > img { width: 120px; height: 120px; border: 4px double #778540; background: #17210f; object-fit: cover; filter: saturate(.82) contrast(1.08); }
+.dossierBody dl { margin: 0; border-top: 1px solid #3a432d; }
+.dossierBody dl > div { display: grid; grid-template-columns: 145px 1fr; gap: 15px; border-bottom: 1px solid #343d29; padding: 11px 8px; opacity: 0; transform: translateY(7px); transition: opacity .28s ease, transform .28s ease; }
+.dossierBody dl > div.dossierVisible { opacity: 1; transform: none; }
+.dossierBody dt { color: #697653; font: 8px var(--heading); letter-spacing: 1px; }.dossierBody dd { margin: 0; color: #ebe7dc; font: 12px var(--heading); }
+.dossierBody dl > div:last-child dd { color: #a9d24a; }
+.dossierProgress { height: 6px; overflow: hidden; border: 1px solid #475231; background: #020402; }
+.dossierProgress span { display: block; height: 100%; background: linear-gradient(90deg, #6d9427, #d6bc3d); transition: width .6s ease; }
+.dossier > small { display: block; margin-top: 11px; color: #606b4c; font: 7px var(--heading); letter-spacing: 1px; }
+
 @media (max-width: 1040px) {
   .commanderHero { grid-template-columns: 1fr; }.identityPanel { border-right: 0; border-bottom: 1px solid #6c7058; }.soldierRail { grid-template-columns: repeat(3, 1fr); }.awardsSection { grid-template-columns: 1fr; }.quickActions { grid-template-columns: 1fr; }.supplyCrate { opacity: .32; }
 }
@@ -174,9 +211,10 @@
 }
 
 @media (max-width: 480px) {
-  .accessPage { padding: 12px; }.accessTerminal { padding: 20px 17px; }.accessTerminalTop { align-items: flex-start; flex-direction: column; gap: 4px; }.accessTerminal > img { width: 74px; height: 74px; margin-top: 16px; }.accessTerminal h1 { font-size: clamp(33px, 11vw, 45px); }.terminalPrompt { margin-top: 20px; }.commanderShell { width: calc(100% - 12px); }.rankCore { grid-template-columns: 105px 1fr; }.rankCore::before { left: 51px; width: 119px; height: 119px; }.rankCore img { width: 100px; height: 100px; }.rankCore h2 { font-size: 33px; }.sectionHeader h2, .hqSection > div > h2, .treasuryPane h2, .provisionsPane h2 { font-size: 31px; }.marketMetrics strong { font-size: 17px; }.marketPrice strong { font-size: 27px; }.soldierCard { min-width: 78vw; }.medalGrid { grid-template-columns: repeat(2, 1fr); }
+  .accessPage { padding: 12px; }.accessTerminal { padding: 20px 17px; }.accessTerminalTop { align-items: flex-start; flex-direction: column; gap: 4px; }.accessTerminal > img { width: 74px; height: 74px; margin-top: 16px; }.accessTerminal h1 { font-size: clamp(33px, 11vw, 45px); }.terminalPrompt { margin-top: 20px; }.commanderShell { width: calc(100% - 12px); }.rankCore { grid-template-columns: 105px 1fr; }.rankCore::before { left: 51px; width: 119px; height: 119px; }.rankCore img { width: 100px; height: 100px; }.rankCore h2 { font-size: 33px; }.sectionHeader h2, .hqSection > div > h2, .treasuryPane h2, .provisionsPane h2 { font-size: 31px; }.marketMetrics strong { font-size: 17px; }.marketPrice strong { font-size: 27px; }.soldierCard { min-width: 78vw; }.medalGrid { grid-template-columns: repeat(2, 1fr); }.identityCheckpoint { padding: 31px 20px 25px; }.identityCheckpoint h1 { font-size: 39px; }.identityCheckpoint > button { min-width: 100%; }.dossier { padding: 18px 14px; }.dossierHeader { align-items: flex-start; flex-direction: column; gap: 6px; }.dossierBody { grid-template-columns: 75px 1fr; gap: 12px; padding: 22px 0; }.dossierBody > img { width: 72px; height: 72px; }.dossierBody dl > div { grid-template-columns: 1fr; gap: 4px; padding: 8px 5px; }.dossierBody dd { overflow-wrap: anywhere; font-size: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bootLine i, .armyLoading > span::after, .liveDataLoading > span::after { animation: none; }
+  .bootLine i, .armyLoading > span::after, .liveDataLoading > span::after, .identityRadar span { animation: none; }
+  .dossierBody dl > div, .dossierProgress span { transition: none; }
 }

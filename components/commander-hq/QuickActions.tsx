@@ -5,12 +5,13 @@ import { useState } from "react";
 import { safeExternalUrl, siteConfig } from "@/lib/site-config";
 import styles from "./CommanderHQ.module.css";
 
-export function QuickActions() {
+export function QuickActions({ onBeforeLock }: { onBeforeLock?: () => Promise<void> }) {
   const [locking, setLocking] = useState(false);
 
   async function lockTerminal() {
     setLocking(true);
     try {
+      await onBeforeLock?.();
       await fetch("/api/commander-hq/logout", { method: "POST" });
     } finally {
       window.location.replace("/commander-hq");
@@ -30,4 +31,3 @@ export function QuickActions() {
     </section>
   );
 }
-

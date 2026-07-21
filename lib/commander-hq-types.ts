@@ -1,16 +1,16 @@
 export type CommanderIdentity = {
-  privyUserId?: string;
-  twitter?: {
+  privyId: string;
+  twitter: {
     id: string;
     username: string;
     displayName: string;
-    profilePictureUrl?: string;
+    profileImage?: string;
   };
-  linkedWallets: Array<{
+  wallets: Array<{
     address: string;
-    chain: "solana";
-    isPrimary: boolean;
+    primary: boolean;
   }>;
+  createdAt: string;
 };
 
 export type Soldier = {
@@ -100,7 +100,6 @@ export type Achievement = {
 };
 
 export type CommanderDashboardData = {
-  identity: CommanderIdentity;
   commander: CommanderProfile;
   soldiers: Soldier[];
   treasury: TreasuryData;

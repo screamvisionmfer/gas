@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- local GAS artwork is served directly. */
 
-import { useState } from "react";
 import type { CommanderIdentity, CommanderProfile } from "@/lib/commander-hq-types";
 import styles from "./CommanderHQ.module.css";
 
@@ -16,28 +15,23 @@ type CommanderHeroProps = {
   walletBusy: boolean;
   walletConnected: boolean;
   walletNotice: string;
+  onLogoutIdentity: () => Promise<void>;
 };
 
-export function CommanderHero({ commander, identity, onConnectWallet, walletBusy, walletConnected, walletNotice }: CommanderHeroProps) {
-  const [notice, setNotice] = useState("");
+export function CommanderHero({ commander, identity, onConnectWallet, walletBusy, walletConnected, walletNotice, onLogoutIdentity }: CommanderHeroProps) {
   const twitter = identity.twitter;
-  const primaryWallet = identity.linkedWallets.find((wallet) => wallet.isPrimary) ?? identity.linkedWallets[0];
-
-  function comingSoon(label: string) {
-    setNotice(`${label} · COMING IN NEXT DEPLOYMENT`);
-    window.setTimeout(() => setNotice(""), 2400);
-  }
+  const primaryWallet = identity.wallets.find((wallet) => wallet.primary) ?? identity.wallets[0];
 
   return (
     <section className={styles.commanderHero} aria-labelledby="commander-name">
       <div className={styles.identityPanel}>
-        <div className={styles.identityTopline}><span>COMMANDER PROFILE</span><b>{twitter ? "X LINK READY" : "X NOT CONNECTED"}</b></div>
+        <div className={styles.identityTopline}><span>COMMANDER PROFILE</span><b>X IDENTITY VERIFIED</b></div>
         <div className={styles.identityMain}>
-          <div className={styles.avatar}>{commander.avatarUrl ? <img src={commander.avatarUrl} alt="" /> : <span>SV</span>}</div>
+          <div className={styles.avatar}>{twitter.profileImage ? <img src={twitter.profileImage} alt="" /> : <span>{twitter.displayName.slice(0, 2).toUpperCase()}</span>}</div>
           <div>
             <small>FIELD IDENTITY</small>
-            <h1 id="commander-name">{twitter?.displayName ?? commander.displayName}</h1>
-            <p>@{twitter?.username ?? commander.username}</p>
+            <h1 id="commander-name">{twitter.displayName}</h1>
+            <p>@{twitter.username}</p>
           </div>
         </div>
         <div className={styles.walletStatus}>
@@ -56,11 +50,12 @@ export function CommanderHero({ commander, identity, onConnectWallet, walletBusy
           </div>
         )}
         <div className={styles.heroActions}>
-          <button type="button" onClick={() => comingSoon("CONNECT X")}>CONNECT X</button>
-          <button type="button" onClick={onConnectWallet} disabled={walletBusy}>{walletBusy ? "SCANNING WALLET..." : walletConnected ? "CHANGE WALLET" : "CONNECT WALLET"}</button>
-          <button type="button" onClick={() => comingSoon("SHARE COMMANDER CARD")}>SHARE COMMANDER CARD</button>
+          <button type="button" disabled>X VERIFIED</button>
+          <button type="button" onClick={onConnectWallet} disabled={walletBusy}>{walletBusy ? "LINKING WALLET..." : walletConnected ? "CHANGE WALLET" : "CONNECT WALLET"}</button>
+          <button type="button" disabled title="Coming in next deployment">VIEW PUBLIC PROFILE<small>COMING IN NEXT DEPLOYMENT</small></button>
+          <button type="button" onClick={() => void onLogoutIdentity()} disabled={walletBusy}>SIGN OUT IDENTITY</button>
         </div>
-        <p className={styles.heroNotice} aria-live="polite">{notice || walletNotice}</p>
+        <p className={styles.heroNotice} aria-live="polite">{walletNotice}</p>
       </div>
 
       <div className={styles.rankPanel}>

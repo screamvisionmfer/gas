@@ -13,7 +13,6 @@ import type {
   Soldier,
   TreasuryData,
 } from "@/lib/commander-hq-types";
-import { connectReadOnlySolanaWallet, type SolanaWalletName } from "@/lib/solana-wallet";
 import { CommanderHero } from "./CommanderHero";
 import { ArmySection, type ArmyLoadStatus } from "./ArmySection";
 import { TreasurySection } from "./TreasurySection";
@@ -71,6 +70,35 @@ function requestAborted(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
+const ARMY_CACHE_TTL = 5 * 60 * 1000;
+
+function cachedArmy(address: string) {
+  try {
+    const stored = window.sessionStorage.getItem(`gas:commander-army:${address}`);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored) as { result: SquadronResult; cachedAt: number };
+    if (Date.now() - parsed.cachedAt > ARMY_CACHE_TTL) return null;
+    return parsed.result;
+  } catch {
+    return null;
+  }
+}
+
+function cacheArmy(address: string, result: SquadronResult) {
+  try {
+    window.sessionStorage.setItem(`gas:commander-army:${address}`, JSON.stringify({ result, cachedAt: Date.now() }));
+  } catch {
+    // Army caching is an optimization; a blocked storage API must not block the live scan.
+  }
+}
+
+function memberSince(createdAt: string) {
+  const date = new Date(createdAt);
+  return Number.isNaN(date.getTime())
+    ? "VERIFIED MEMBER"
+    : new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(date);
+}
+
 function liveDataError(code: string | undefined, fallback: string) {
   if (code === "COMMANDER_SESSION_REQUIRED") return "COMMAND SESSION EXPIRED — RELOAD HQ";
   if (code === "INVALID_WALLET_ADDRESS") return "CONNECTED WALLET ADDRESS IS INVALID";
@@ -83,11 +111,14 @@ type CommanderArmyControllerProps = {
   commander: CommanderProfile;
   identity: CommanderIdentity;
   treasury: TreasuryData;
+  walletAddress: string;
+  onConnectWallet: () => void;
+  onLogoutIdentity: () => Promise<void>;
+  identityBusy: boolean;
 };
 
-export function CommanderArmyController({ commander, identity, treasury }: CommanderArmyControllerProps) {
-  const [wallet, setWallet] = useState("");
-  const [walletName, setWalletName] = useState<SolanaWalletName | null>(null);
+export function CommanderArmyController({ commander, identity, treasury, walletAddress, onConnectWallet, onLogoutIdentity, identityBusy }: CommanderArmyControllerProps) {
+  const wallet = walletAddress;
   const [result, setResult] = useState<SquadronResult | null>(null);
   const [status, setStatus] = useState<ArmyLoadStatus>("idle");
   const [error, setError] = useState("");
@@ -101,9 +132,18 @@ export function CommanderArmyController({ commander, identity, treasury }: Comma
   const armyRequest = useRef<AbortController | null>(null);
   const provisionsRequest = useRef<AbortController | null>(null);
   const marketRequest = useRef<AbortController | null>(null);
+  const loadedWallet = useRef("");
 
-  const loadArmy = useCallback(async (address: string) => {
+  const loadArmy = useCallback(async (address: string, forceRefresh = false) => {
     armyRequest.current?.abort();
+    if (!forceRefresh) {
+      const cached = cachedArmy(address);
+      if (cached) {
+        setResult(cached);
+        setStatus(cached.count > 0 ? "ready" : "empty");
+        return;
+      }
+    }
     const controller = new AbortController();
     armyRequest.current = controller;
     setStatus("loading");
@@ -120,6 +160,7 @@ export function CommanderArmyController({ commander, identity, treasury }: Comma
       const payload = await response.json() as SquadronResult & { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Unable to inspect this wallet.");
       setResult(payload);
+      cacheArmy(address, payload);
       setStatus(payload.count > 0 ? "ready" : "empty");
     } catch (scanError) {
       if (requestAborted(scanError)) return;
@@ -194,23 +235,16 @@ export function CommanderArmyController({ commander, identity, treasury }: Comma
     };
   }, [loadMarket]);
 
-  async function connectWallet() {
-    setStatus("connecting");
-    setError("");
-    try {
-      const connection = await connectReadOnlySolanaWallet();
-      if (connection.address !== wallet) {
-        setResult(null);
-        setBalance(null);
-      }
-      setWallet(connection.address);
-      setWalletName(connection.walletName);
-      await Promise.all([loadArmy(connection.address), loadProvisions(connection.address)]);
-    } catch (connectionError) {
-      setError(connectionError instanceof Error ? connectionError.message : "Wallet connection was cancelled.");
-      setStatus("error");
-    }
-  }
+  useEffect(() => {
+    if (!wallet || loadedWallet.current === wallet) return;
+    loadedWallet.current = wallet;
+    setResult(null);
+    setBalance(null);
+    const initialArmyLoad = window.setTimeout(() => {
+      void Promise.all([loadArmy(wallet), loadProvisions(wallet)]);
+    }, 0);
+    return () => window.clearTimeout(initialArmyLoad);
+  }, [loadArmy, loadProvisions, wallet]);
 
   function refreshLiveData() {
     const requests: Promise<void>[] = [loadMarket(true)];
@@ -231,20 +265,24 @@ export function CommanderArmyController({ commander, identity, treasury }: Comma
     rankProgress: progressToNextRank(result),
     primarySoldier,
   } : disconnectedCommander(commander), [commander, primarySoldier, result]);
-  const liveIdentity = useMemo<CommanderIdentity>(() => ({
-    ...identity,
-    linkedWallets: wallet ? [{ address: wallet, chain: "solana", isPrimary: true }] : [],
-  }), [identity, wallet]);
+  const identifiedCommander = useMemo<CommanderProfile>(() => ({
+    ...liveCommander,
+    displayName: identity.twitter.displayName,
+    username: identity.twitter.username,
+    avatarUrl: identity.twitter.profileImage,
+    memberSince: memberSince(identity.createdAt),
+  }), [identity, liveCommander]);
 
   return (
     <>
       <CommanderHero
-        commander={liveCommander}
-        identity={liveIdentity}
-        onConnectWallet={connectWallet}
-        walletBusy={status === "connecting" || status === "loading"}
+        commander={identifiedCommander}
+        identity={identity}
+        onConnectWallet={onConnectWallet}
+        walletBusy={identityBusy}
         walletConnected={Boolean(wallet)}
-        walletNotice={walletName && wallet ? `${walletName.toUpperCase()} CONNECTED · READ ONLY` : ""}
+        walletNotice={wallet ? "PRIVY LINKED · READ ONLY · NO TRANSACTIONS" : ""}
+        onLogoutIdentity={onLogoutIdentity}
       />
       <ArmySection
         soldiers={soldiers}
@@ -253,7 +291,7 @@ export function CommanderArmyController({ commander, identity, treasury }: Comma
         status={status}
         error={error}
         walletConnected={Boolean(wallet)}
-        onRefresh={() => wallet && loadArmy(wallet)}
+        onRefresh={() => wallet && loadArmy(wallet, true)}
       />
       <TreasurySection
         treasury={treasury}

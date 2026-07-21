@@ -1,27 +1,16 @@
 /* eslint-disable @next/next/no-img-element -- local GAS artwork is served directly. */
 
 import type { CommanderDashboardData } from "@/lib/commander-hq-types";
-import { Header, Footer } from "@/components/LandingPage";
-import { CommanderArmyController } from "./CommanderArmyController";
-import { MedalsSection } from "./MedalsSection";
-import { QuickActions } from "./QuickActions";
+import { Header } from "@/components/LandingPage";
+import { CommanderIdentityGateway } from "./CommanderIdentityGateway";
+import { CommanderIdentityProvider } from "./CommanderIdentityProvider";
 import styles from "./CommanderHQ.module.css";
 
 export function CommanderDashboard({ data }: { data: CommanderDashboardData }) {
   return (
-    <main className={styles.dashboardPage}>
-      <Header />
-      <div className={styles.commanderShell}>
-        <div className={styles.commanderMasthead}>
-          <span>GAS PERSONNEL NETWORK / PRIVATE COMMAND NODE</span>
-          <b>{data.dataMode === "live" ? "LIVE ON-CHAIN DATA" : data.dataMode === "hybrid" ? "LIVE ARMY + MARKET / SIMULATION PROFILE" : "SIMULATION DATA"}</b>
-        </div>
-        <CommanderArmyController commander={data.commander} identity={data.identity} treasury={data.treasury} />
-        <MedalsSection medals={data.medals} achievements={data.achievements} />
-        <QuickActions />
-      </div>
-      <Footer />
-    </main>
+    <CommanderIdentityProvider>
+      <CommanderIdentityGateway data={data} />
+    </CommanderIdentityProvider>
   );
 }
 

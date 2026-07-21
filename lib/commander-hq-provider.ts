@@ -1,13 +1,13 @@
 import { mockCommanderDashboard } from "./commander-hq-data";
-import type { CommanderDashboardData, CommanderIdentity } from "./commander-hq-types";
+import type { CommanderDashboardData } from "./commander-hq-types";
 
 export interface CommanderDataProvider {
-  getDashboard(identity?: CommanderIdentity): Promise<CommanderDashboardData>;
+  getDashboard(): Promise<CommanderDashboardData>;
 }
 
 class MockCommanderDataProvider implements CommanderDataProvider {
-  async getDashboard(identity?: CommanderIdentity) {
-    return identity ? { ...mockCommanderDashboard, identity } : mockCommanderDashboard;
+  async getDashboard() {
+    return mockCommanderDashboard;
   }
 }
 

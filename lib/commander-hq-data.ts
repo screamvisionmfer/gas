@@ -1,14 +1,6 @@
 import type { CommanderDashboardData } from "./commander-hq-types";
 
 export const mockCommanderDashboard: CommanderDashboardData = {
-  identity: {
-    twitter: {
-      id: "mock-x-001",
-      username: "scream_vision",
-      displayName: "Scream Vision",
-    },
-    linkedWallets: [],
-  },
   commander: {
     displayName: "Scream Vision",
     username: "scream_vision",
