@@ -46,7 +46,8 @@ const solanaConnectors = toSolanaWalletConnectors({ shouldAutoConnect: false });
 function toCommanderIdentity(user: User | null): CommanderIdentity | null {
   if (!user?.twitter) return null;
 
-  const externalSolanaAddresses = user.linkedAccounts.flatMap((account) => {
+  const linkedAccounts = Array.isArray(user.linkedAccounts) ? user.linkedAccounts : [];
+  const externalSolanaAddresses = linkedAccounts.flatMap((account) => {
     if (account.type !== "wallet" || account.chainType !== "solana" || account.walletClientType === "privy" || account.walletClientType === "privy-v2") return [];
     return [account.address];
   });
@@ -73,11 +74,21 @@ function signatureToBase64(signature: Uint8Array) {
 
 function CommanderIdentityState({ children }: { children: ReactNode }) {
   const { ready, authenticated, user, logout: privyLogout } = usePrivy();
-  const { initOAuth, loading: oauthLoading } = useLoginWithOAuth();
-  const { generateSiwsMessage, linkWithSiws } = useLinkWithSiws();
   const [linkedUser, setLinkedUser] = useState<User | null>(null);
   const [operation, setOperation] = useState<IdentityOperation>("idle");
   const [error, setError] = useState("");
+  const { initOAuth, loading: oauthLoading } = useLoginWithOAuth({
+    onComplete: ({ user: authenticatedUser }) => {
+      setLinkedUser(authenticatedUser);
+      setOperation("idle");
+      setError("");
+    },
+    onError: (oauthError) => {
+      setOperation("idle");
+      setError(`X AUTHENTICATION FAILED · ${String(oauthError)}`);
+    },
+  });
+  const { generateSiwsMessage, linkWithSiws } = useLinkWithSiws();
 
   async function linkSolanaWallet(wallet: BaseConnectedWalletType) {
     if (wallet.type !== "solana") {
@@ -165,7 +176,6 @@ function CommanderIdentityState({ children }: { children: ReactNode }) {
 
 export function CommanderIdentityProvider({ children }: { children: ReactNode }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID?.trim();
-  const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID?.trim();
 
   if (!appId) {
     return <CommanderIdentityContext.Provider value={unconfiguredIdentity}>{children}</CommanderIdentityContext.Provider>;
@@ -174,7 +184,6 @@ export function CommanderIdentityProvider({ children }: { children: ReactNode })
   return (
     <PrivyProvider
       appId={appId}
-      clientId={clientId || undefined}
       config={{
         loginMethods: ["twitter"],
         appearance: {
