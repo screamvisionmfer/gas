@@ -23,6 +23,7 @@ type CommanderIdentityContextValue = {
   identity: CommanderIdentity | null;
   operation: IdentityOperation;
   error: string;
+  getAuthToken: () => Promise<string | null>;
   continueWithX: () => void;
   connectWallet: () => void;
   logout: () => Promise<void>;
@@ -35,6 +36,7 @@ const unconfiguredIdentity: CommanderIdentityContextValue = {
   identity: null,
   operation: "idle",
   error: "PRIVY APP ID IS NOT CONFIGURED",
+  getAuthToken: async () => null,
   continueWithX: () => undefined,
   connectWallet: () => undefined,
   logout: async () => undefined,
@@ -73,7 +75,7 @@ function signatureToBase64(signature: Uint8Array) {
 }
 
 function CommanderIdentityState({ children }: { children: ReactNode }) {
-  const { ready, authenticated, user, logout: privyLogout } = usePrivy();
+  const { ready, authenticated, user, logout: privyLogout, getAccessToken } = usePrivy();
   const [linkedUser, setLinkedUser] = useState<User | null>(null);
   const [operation, setOperation] = useState<IdentityOperation>("idle");
   const [error, setError] = useState("");
@@ -166,6 +168,7 @@ function CommanderIdentityState({ children }: { children: ReactNode }) {
     identity,
     operation: oauthLoading ? "login" : operation,
     error,
+    getAuthToken: getAccessToken,
     continueWithX,
     connectWallet,
     logout,

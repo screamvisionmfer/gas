@@ -75,6 +75,21 @@
 .rankProgressTrack > span { display: block; height: 100%; background: linear-gradient(90deg, #6d9825, #c6dd4b); }
 .rankProgress > small { display: block; margin-top: 6px; color: #707960; font: 8px var(--heading); }
 
+.publicProfilePanel { margin-top: 24px; display: grid; grid-template-columns: .72fr 1.28fr; align-items: center; gap: 28px; border: 1px solid #7d6b2d; padding: 24px 26px; background: radial-gradient(circle at 15% 45%, rgba(135,169,40,.14), transparent 35%), #10160c; color: #e9e5d8; box-shadow: 0 12px 30px rgba(20,23,14,.14); }
+.publicProfilePanel > div:first-child > span { color: #99b44b; font: 8px var(--heading); letter-spacing: 1.7px; }
+.publicProfilePanel h2 { margin: 6px 0 0; color: #dfb63a; font: 36px/.88 var(--heading); }
+.publicProfilePanel p { margin: 8px 0 0; color: #8f987b; font-size: 11px; }
+.profileActions { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px; }
+.profileActions a, .profileActions button, .profilePublishControls > button { min-height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid #596143; padding: 8px; background: #25331a; color: #ece8db; font: 8px var(--heading); text-align: center; text-decoration: none; cursor: pointer; }
+.profileActions a:first-of-type, .profilePublishControls > button { border-color: #c39b2b; background: #d9ac2d; color: #11140d; }
+.profileActions button:last-child { border-color: #765434; background: #2b190e; color: #e3aa70; }
+.profileActions button:disabled, .profilePublishControls > button:disabled { cursor: wait; filter: grayscale(.6); opacity: .55; }
+.profilePublishControls { display: grid; gap: 12px; }
+.profilePublishControls label { display: grid; grid-template-columns: 21px 1fr; gap: 9px; align-items: start; color: #aeb59c; font-size: 11px; }
+.profilePublishControls input { width: 18px; height: 18px; accent-color: #a4c441; }
+.profileStatus { color: #a7ca4a; font: 10px var(--heading); letter-spacing: 1.2px; }
+.publicProfilePanel .profileError { grid-column: 1 / -1; margin: -8px 0 0; border-top: 1px solid #5e412c; padding-top: 10px; color: #df9f69; font: 8px var(--heading); letter-spacing: .8px; }
+
 .hqSection { margin-top: 24px; border: 1px solid #5c604a; padding: 26px; background: rgba(241,237,226,.94); box-shadow: 0 10px 27px rgba(30,32,20,.09); }
 .sectionHeader { display: flex; align-items: end; justify-content: space-between; gap: 25px; border-bottom: 2px solid #323722; padding-bottom: 15px; }
 .sectionHeader span, .sectionKicker, .treasuryPane > span, .provisionsPane > span, .quickActions > div > span { color: #68723f; font: 9px var(--heading); letter-spacing: 1.6px; }
@@ -96,6 +111,8 @@
 .soldierCopy dl div { display: grid; gap: 2px; border-top: 1px solid #343a2a; padding: 5px 0; }
 .soldierCopy dt { color: #687058; font-size: 8px; text-transform: uppercase; }
 .soldierCopy dd { overflow: hidden; margin: 0; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.featureSoldierButton { width: 100%; min-height: 34px; margin-top: 8px; border: 1px solid #6f793e; padding: 6px; background: #26351a; color: #d9d6c9; font: 7px var(--heading); cursor: pointer; }
+.featureSoldierButton:disabled { cursor: default; border-color: #a1832c; background: #d0a52e; color: #10130c; }
 .sectionButton { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; margin-top: 17px; border: 1px solid #4c523a; padding: 0 17px; background: #252d1a; color: #eeeadd; font: 10px var(--heading); text-decoration: none; }
 .sectionHeader .sectionButton { margin-top: 0; }
 .emptyState { margin-top: 18px; border: 1px dashed #7a7d69; padding: 45px 20px; color: #686d57; text-align: center; }
@@ -203,15 +220,17 @@
 .dossier > small { display: block; margin-top: 11px; color: #606b4c; font: 7px var(--heading); letter-spacing: 1px; }
 
 @media (max-width: 1040px) {
-  .commanderHero { grid-template-columns: 1fr; }.identityPanel { border-right: 0; border-bottom: 1px solid #6c7058; }.soldierRail { grid-template-columns: repeat(3, 1fr); }.awardsSection { grid-template-columns: 1fr; }.quickActions { grid-template-columns: 1fr; }.supplyCrate { opacity: .32; }
+  .commanderHero { grid-template-columns: 1fr; }.identityPanel { border-right: 0; border-bottom: 1px solid #6c7058; }.soldierRail { grid-template-columns: repeat(3, 1fr); }.awardsSection { grid-template-columns: 1fr; }.quickActions, .publicProfilePanel { grid-template-columns: 1fr; }.supplyCrate { opacity: .32; }
 }
 
 @media (max-width: 720px) {
   .commanderShell { width: calc(100% - 20px); padding-top: 88px; }.commanderMasthead { align-items: flex-start; flex-direction: column; gap: 4px; }.identityPanel, .rankPanel, .hqSection { padding: 18px 14px; }.identityMain { align-items: flex-start; }.avatar { width: 78px; height: 78px; font-size: 27px; }.identityMain h1 { font-size: clamp(36px, 12vw, 52px); }.walletStatus { align-items: flex-start; flex-direction: column; gap: 5px; }.primaryRecruit img { width: 65px; height: 65px; }.heroActions { grid-template-columns: 1fr; }.rankCore { grid-template-columns: 130px 1fr; min-height: 180px; }.rankCore::before { left: 63px; width: 145px; height: 145px; }.rankCore img { width: 125px; height: 125px; }.rankCore h2 { font-size: clamp(35px, 11vw, 49px); }.rankMetrics { grid-template-columns: 1fr 1fr; }.rankMetrics > div:nth-child(2) { border-right: 0; }.rankMetrics > div:last-child { grid-column: 1 / -1; border-top: 1px solid #3d442f; }.sectionHeader { align-items: flex-start; flex-direction: column; }.sectionHeader .sectionActions { width: 100%; }.sectionHeader .sectionButton { flex: 1; }.armySummary { width: 100%; justify-content: space-between; }.armySummary p { text-align: left; }.soldierRail { display: flex; overflow-x: auto; gap: 10px; margin-inline: -14px; padding: 0 14px 12px; scroll-snap-type: x mandatory; scrollbar-width: none; }.soldierRail::-webkit-scrollbar { display: none; }.soldierCard { min-width: 72vw; scroll-snap-align: center; }.treasurySection { grid-template-columns: 1fr; padding: 0; }.treasuryPane, .provisionsPane { padding: 23px 17px; }.treasuryPane { border-right: 0; border-bottom: 1px solid #4d5439; }.supplyCrate { right: 20px; top: 76px; width: 95px; height: 74px; }.exactBalance { max-width: calc(100% - 105px); }.bigMoney { font-size: clamp(43px, 14vw, 62px); }.provisionBalance strong { font-size: clamp(41px, 13vw, 58px); }.marketMetrics { grid-template-columns: 1fr 1fr; }.marketMetrics > div { border-right: 1px solid #aaa899; border-bottom: 1px solid #aaa899; }.marketMetrics > div:nth-child(2n) { border-right: 0; }.marketMetrics > div:last-child { border-bottom: 0; }.marketPrice { grid-column: 1 / -1; border-right: 0 !important; }.marketPrice strong { font-size: 24px; }.marketStatusLine { align-items: flex-start; flex-direction: column; gap: 5px; }.marketChart { height: 190px; }.chartPeriods { justify-content: stretch; }.chartPeriods button { min-width: 0; flex: 1; }.medalGrid { grid-template-columns: repeat(3, 1fr); }.achievementList article { grid-template-columns: 34px 1fr; }.achievementList article > small { grid-column: 2; }.achievementIcon { width: 31px; height: 31px; }.quickActions { padding: 23px 16px; }.quickActions h2 { font-size: 34px; }.actionGrid { grid-template-columns: 1fr; }.actionGrid .lockButton { grid-column: auto; }
+  .publicProfilePanel { padding: 20px 15px; }.profileActions { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
   .accessPage { padding: 12px; }.accessTerminal { padding: 20px 17px; }.accessTerminalTop { align-items: flex-start; flex-direction: column; gap: 4px; }.accessTerminal > img { width: 74px; height: 74px; margin-top: 16px; }.accessTerminal h1 { font-size: clamp(33px, 11vw, 45px); }.terminalPrompt { margin-top: 20px; }.commanderShell { width: calc(100% - 12px); }.rankCore { grid-template-columns: 105px 1fr; }.rankCore::before { left: 51px; width: 119px; height: 119px; }.rankCore img { width: 100px; height: 100px; }.rankCore h2 { font-size: 33px; }.sectionHeader h2, .hqSection > div > h2, .treasuryPane h2, .provisionsPane h2 { font-size: 31px; }.marketMetrics strong { font-size: 17px; }.marketPrice strong { font-size: 27px; }.soldierCard { min-width: 78vw; }.medalGrid { grid-template-columns: repeat(2, 1fr); }.identityCheckpoint { padding: 31px 20px 25px; }.identityCheckpoint h1 { font-size: 39px; }.identityCheckpoint > button { min-width: 100%; }.dossier { padding: 18px 14px; }.dossierHeader { align-items: flex-start; flex-direction: column; gap: 6px; }.dossierBody { grid-template-columns: 75px 1fr; gap: 12px; padding: 22px 0; }.dossierBody > img { width: 72px; height: 72px; }.dossierBody dl > div { grid-template-columns: 1fr; gap: 4px; padding: 8px 5px; }.dossierBody dd { overflow-wrap: anywhere; font-size: 10px; }
+  .profileActions { grid-template-columns: 1fr; }.publicProfilePanel h2 { font-size: 31px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

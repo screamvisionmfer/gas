@@ -52,7 +52,6 @@ export function CommanderHero({ commander, identity, onConnectWallet, walletBusy
         <div className={styles.heroActions}>
           <button type="button" disabled>X VERIFIED</button>
           <button type="button" onClick={onConnectWallet} disabled={walletBusy}>{walletBusy ? "LINKING WALLET..." : walletConnected ? "CHANGE WALLET" : "CONNECT WALLET"}</button>
-          <button type="button" disabled title="Coming in next deployment">VIEW PUBLIC PROFILE<small>COMING IN NEXT DEPLOYMENT</small></button>
           <button type="button" onClick={() => void onLogoutIdentity()} disabled={walletBusy}>SIGN OUT IDENTITY</button>
         </div>
         <p className={styles.heroNotice} aria-live="polite">{walletNotice}</p>

@@ -11,7 +11,7 @@ function shortMint(mint: string) {
   return mint.length > 16 ? `${mint.slice(0, 6)}…${mint.slice(-6)}` : mint;
 }
 
-function SoldierCard({ soldier }: { soldier: Soldier }) {
+function SoldierCard({ soldier, canFeature, featured, busy, onSetFeatured }: { soldier: Soldier; canFeature: boolean; featured: boolean; busy: boolean; onSetFeatured: () => void }) {
   return (
     <article className={styles.soldierCard}>
       <div className={styles.soldierImage}><img src={soldier.image} alt={soldier.name} loading="lazy" /><span>{soldier.rarity ?? "UNRANKED"}</span></div>
@@ -22,6 +22,7 @@ function SoldierCard({ soldier }: { soldier: Soldier }) {
         <dl>
           {(soldier.traits ?? []).slice(0, 2).map((trait) => <div key={trait.traitType}><dt>{trait.traitType}</dt><dd>{trait.value}</dd></div>)}
         </dl>
+        {canFeature && <button className={styles.featureSoldierButton} type="button" onClick={onSetFeatured} disabled={featured || busy}>{featured ? "FEATURED SOLDIER" : busy ? "VERIFYING OWNERSHIP…" : "SET AS FEATURED SOLDIER"}</button>}
       </div>
     </article>
   );
@@ -35,9 +36,13 @@ type ArmySectionProps = {
   error: string;
   walletConnected: boolean;
   onRefresh: () => void;
+  publicProfileActive: boolean;
+  featuredMint?: string;
+  featuredBusyMint: string;
+  onSetFeatured: (mint: string) => void;
 };
 
-export function ArmySection({ soldiers, armySize, bestSoldier, status, error, walletConnected, onRefresh }: ArmySectionProps) {
+export function ArmySection({ soldiers, armySize, bestSoldier, status, error, walletConnected, onRefresh, publicProfileActive, featuredMint, featuredBusyMint, onSetFeatured }: ArmySectionProps) {
   const scanning = status === "connecting" || status === "loading";
   const totalLabel = armySize === undefined ? "—" : armySize;
   return (
@@ -54,7 +59,7 @@ export function ArmySection({ soldiers, armySize, bestSoldier, status, error, wa
         <>
           {status === "error" && <p className={styles.armyInlineError} role="alert">REFRESH FAILED · {error}</p>}
           {scanning && <p className={styles.armyRefreshStatus} aria-live="polite">REFRESHING ON-CHAIN PERSONNEL…</p>}
-          <div className={styles.soldierRail}>{soldiers.map((soldier) => <SoldierCard key={soldier.mint} soldier={soldier} />)}</div>
+          <div className={styles.soldierRail}>{soldiers.map((soldier) => <SoldierCard key={soldier.mint} soldier={soldier} canFeature={publicProfileActive} featured={soldier.mint === featuredMint} busy={soldier.mint === featuredBusyMint} onSetFeatured={() => onSetFeatured(soldier.mint)} />)}</div>
         </>
       ) : status === "empty" ? (
         <div className={styles.emptyState}><strong>NO ACTIVE SOLDIERS DETECTED</strong><p>This wallet does not currently hold any verified GAS collection NFT.</p></div>

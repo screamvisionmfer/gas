@@ -13,10 +13,13 @@ import type {
   Soldier,
   TreasuryData,
 } from "@/lib/commander-hq-types";
+import type { CommanderProfileResponse, PublicCommanderProfile } from "@/lib/commander-profile-types";
 import { CommanderHero } from "./CommanderHero";
 import { ArmySection, type ArmyLoadStatus } from "./ArmySection";
 import { TreasurySection } from "./TreasurySection";
 import { MarketIntelSection } from "./MarketIntelSection";
+import { PublicProfilePanel } from "./PublicProfilePanel";
+import { useCommanderIdentity } from "./CommanderIdentityProvider";
 
 function traitValue(nft: OwnedNft, traitName: string) {
   return nft.attributes?.find((attribute) => attribute.trait_type.toLowerCase() === traitName.toLowerCase())?.value;
@@ -118,6 +121,7 @@ type CommanderArmyControllerProps = {
 };
 
 export function CommanderArmyController({ commander, identity, treasury, walletAddress, onConnectWallet, onLogoutIdentity, identityBusy }: CommanderArmyControllerProps) {
+  const { getAuthToken } = useCommanderIdentity();
   const wallet = walletAddress;
   const [result, setResult] = useState<SquadronResult | null>(null);
   const [status, setStatus] = useState<ArmyLoadStatus>("idle");
@@ -133,6 +137,12 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
   const provisionsRequest = useRef<AbortController | null>(null);
   const marketRequest = useRef<AbortController | null>(null);
   const loadedWallet = useRef("");
+  const [publicProfile, setPublicProfile] = useState<PublicCommanderProfile | null>(null);
+  const [profileUrl, setProfileUrl] = useState("");
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileAction, setProfileAction] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [publicConsent, setPublicConsent] = useState(false);
 
   const loadArmy = useCallback(async (address: string, forceRefresh = false) => {
     armyRequest.current?.abort();
@@ -246,6 +256,46 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
     return () => window.clearTimeout(initialArmyLoad);
   }, [loadArmy, loadProvisions, wallet]);
 
+  const profileRequest = useCallback(async (method: "GET" | "POST" | "PATCH", body?: unknown) => {
+    const token = await getAuthToken();
+    if (!token) throw new Error("PRIVY SESSION EXPIRED — SIGN IN AGAIN");
+    const response = await fetch("/api/commander-profile", {
+      method,
+      headers: { Authorization: `Bearer ${token}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+      cache: "no-store",
+    });
+    const payload = await response.json() as CommanderProfileResponse & { message?: string };
+    if (!response.ok) throw new Error(payload.message ?? "PUBLIC PROFILE SERVICE UNAVAILABLE");
+    setPublicProfile(payload.profile);
+    setProfileUrl(payload.profileUrl ?? "");
+    return payload.profile;
+  }, [getAuthToken]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const request = window.setTimeout(() => {
+      setProfileLoading(true);
+      void profileRequest("GET")
+        .catch((profileLoadError) => { if (!cancelled) setProfileError(profileLoadError instanceof Error ? profileLoadError.message : "PUBLIC PROFILE SERVICE UNAVAILABLE"); })
+        .finally(() => { if (!cancelled) setProfileLoading(false); });
+    }, 0);
+    return () => { cancelled = true; window.clearTimeout(request); };
+  }, [identity.privyId, profileRequest, wallet]);
+
+  const mutateProfile = useCallback(async (action: string, method: "POST" | "PATCH", body: unknown) => {
+    setProfileAction(action);
+    setProfileError("");
+    try {
+      const profile = await profileRequest(method, body);
+      if (profile?.isPublic) setPublicConsent(true);
+    } catch (profileMutationError) {
+      setProfileError(profileMutationError instanceof Error ? profileMutationError.message : "PUBLIC PROFILE UPDATE FAILED");
+    } finally {
+      setProfileAction("");
+    }
+  }, [profileRequest]);
+
   function refreshLiveData() {
     const requests: Promise<void>[] = [loadMarket(true)];
     if (wallet) requests.push(loadProvisions(wallet));
@@ -284,6 +334,19 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
         walletNotice={wallet ? "PRIVY LINKED · READ ONLY · NO TRANSACTIONS" : ""}
         onLogoutIdentity={onLogoutIdentity}
       />
+      <PublicProfilePanel
+        profile={publicProfile}
+        profileUrl={profileUrl}
+        loading={profileLoading}
+        busyAction={profileAction}
+        error={profileError}
+        consent={publicConsent}
+        onConsentChange={setPublicConsent}
+        onCreate={() => void mutateProfile("create", "POST", { publicConsent })}
+        onSync={() => void mutateProfile("sync", "PATCH", { action: "sync" })}
+        onUnpublish={() => void mutateProfile("unpublish", "PATCH", { action: "unpublish" })}
+        onCopy={() => void navigator.clipboard.writeText(profileUrl)}
+      />
       <ArmySection
         soldiers={soldiers}
         armySize={result?.count}
@@ -292,6 +355,10 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
         error={error}
         walletConnected={Boolean(wallet)}
         onRefresh={() => wallet && loadArmy(wallet, true)}
+        publicProfileActive={publicProfile?.isPublic === true}
+        featuredMint={publicProfile?.featuredSoldierMint}
+        featuredBusyMint={profileAction.startsWith("feature:") ? profileAction.slice(8) : ""}
+        onSetFeatured={(mint) => void mutateProfile(`feature:${mint}`, "PATCH", { action: "set-featured", mint })}
       />
       <TreasurySection
         treasury={treasury}
