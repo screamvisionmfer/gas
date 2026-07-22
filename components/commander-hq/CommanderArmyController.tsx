@@ -13,7 +13,7 @@ import type {
   Soldier,
   TreasuryData,
 } from "@/lib/commander-hq-types";
-import type { CommanderProfileResponse, PublicCommanderProfile } from "@/lib/commander-profile-types";
+import type { CommanderLeaderboardPositions, CommanderProfileResponse, PublicCommanderProfile } from "@/lib/commander-profile-types";
 import { CommanderHero } from "./CommanderHero";
 import { ArmySection, type ArmyLoadStatus } from "./ArmySection";
 import { TreasurySection } from "./TreasurySection";
@@ -139,6 +139,7 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
   const loadedWallet = useRef("");
   const [publicProfile, setPublicProfile] = useState<PublicCommanderProfile | null>(null);
   const [profileUrl, setProfileUrl] = useState("");
+  const [leaderboardPositions, setLeaderboardPositions] = useState<CommanderLeaderboardPositions>();
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileAction, setProfileAction] = useState("");
   const [profileError, setProfileError] = useState("");
@@ -269,6 +270,7 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
     if (!response.ok) throw new Error(payload.message ?? "PUBLIC PROFILE SERVICE UNAVAILABLE");
     setPublicProfile(payload.profile);
     setProfileUrl(payload.profileUrl ?? "");
+    setLeaderboardPositions(payload.positions);
     return payload.profile;
   }, [getAuthToken]);
 
@@ -337,6 +339,7 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
       <PublicProfilePanel
         profile={publicProfile}
         profileUrl={profileUrl}
+        positions={leaderboardPositions}
         loading={profileLoading}
         busyAction={profileAction}
         error={profileError}

@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- external X and verified NFT snapshot images have runtime fallbacks. */
 
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Header, Footer } from "@/components/LandingPage";
 import { PublicArmy } from "@/components/commander-profile/PublicArmy";
@@ -96,6 +97,7 @@ export default async function CommanderProfilePage({ params }: Props) {
             </dl>
             <div className={styles.shareActions}>
               <a href={xShare} target="_blank" rel="noreferrer">SHARE TO X</a>
+              <Link href="/leaderboard">VIEW LEADERBOARD</Link>
               <a href={siteConfig.twitterUrl} target="_blank" rel="noreferrer">JOIN THE SQUADRON</a>
             </div>
           </div>

@@ -31,3 +31,9 @@ export function rankForCount(count: number) {
 export function nextRankForCount(count: number) {
   return ranks.find((rank) => rank.min > count);
 }
+
+export function rankSortValue(rankName: string) {
+  const normalized = rankName.trim().toLowerCase();
+  const index = ranks.findIndex((rank) => rank.name.toLowerCase() === normalized);
+  return index < 0 ? 0 : index + 1;
+}

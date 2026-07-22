@@ -17,6 +17,7 @@ const navItems = [
   ["Command Center", "/#command-center"],
   ["Roadmap", "/#roadmap"],
   ["Materials", "/materials"],
+  ["Leaderboard", "/leaderboard"],
   ["Command HQ", "/commander-hq"],
 ] as const;
 

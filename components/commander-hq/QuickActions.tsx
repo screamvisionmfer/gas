@@ -24,7 +24,7 @@ export function QuickActions({ onBeforeLock }: { onBeforeLock?: () => Promise<vo
       <div className={styles.actionGrid}>
         <Link href="/#command-center">GENERATE BANNER</Link>
         <Link href="/#command-center">SHARE MY RANK</Link>
-        <button type="button" disabled title="Coming in next deployment">VIEW LEADERBOARD<small>COMING SOON</small></button>
+        <Link href="/leaderboard">VIEW LEADERBOARD</Link>
         <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">RECRUIT SOLDIERS</a>
         <button className={styles.lockButton} type="button" onClick={lockTerminal} disabled={locking}>{locking ? "LOCKING..." : "LOCK TERMINAL"}</button>
       </div>

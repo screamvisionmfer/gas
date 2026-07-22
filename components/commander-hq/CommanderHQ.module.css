@@ -88,6 +88,15 @@
 .profilePublishControls label { display: grid; grid-template-columns: 21px 1fr; gap: 9px; align-items: start; color: #aeb59c; font-size: 11px; }
 .profilePublishControls input { width: 18px; height: 18px; accent-color: #a4c441; }
 .profileStatus { color: #a7ca4a; font: 10px var(--heading); letter-spacing: 1.2px; }
+.profileActiveArea { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; align-items: stretch; }
+.globalPosition { border: 1px solid #65713c; padding: 13px; background: #090d07; }
+.globalPosition > span { color: #9bb646; font: 8px var(--heading); letter-spacing: 1.1px; }
+.globalPosition > strong { display: block; margin: 6px 0; color: #dfb63a; font: 35px/.85 var(--heading); }
+.globalPosition > strong small { color: #747d5c; font-size: 10px; }
+.globalPosition p { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 0; }
+.globalPosition p b { color: #bec5aa; font: 7px var(--heading); }
+.globalPosition a, .leaderboardLink { color: #dcb637; font: 8px var(--heading); letter-spacing: .6px; }
+.leaderboardLink { display: inline-block; margin-top: 12px; }
 .publicProfilePanel .profileError { grid-column: 1 / -1; margin: -8px 0 0; border-top: 1px solid #5e412c; padding-top: 10px; color: #df9f69; font: 8px var(--heading); letter-spacing: .8px; }
 
 .hqSection { margin-top: 24px; border: 1px solid #5c604a; padding: 26px; background: rgba(241,237,226,.94); box-shadow: 0 10px 27px rgba(30,32,20,.09); }
@@ -220,7 +229,7 @@
 .dossier > small { display: block; margin-top: 11px; color: #606b4c; font: 7px var(--heading); letter-spacing: 1px; }
 
 @media (max-width: 1040px) {
-  .commanderHero { grid-template-columns: 1fr; }.identityPanel { border-right: 0; border-bottom: 1px solid #6c7058; }.soldierRail { grid-template-columns: repeat(3, 1fr); }.awardsSection { grid-template-columns: 1fr; }.quickActions, .publicProfilePanel { grid-template-columns: 1fr; }.supplyCrate { opacity: .32; }
+  .commanderHero { grid-template-columns: 1fr; }.identityPanel { border-right: 0; border-bottom: 1px solid #6c7058; }.soldierRail { grid-template-columns: repeat(3, 1fr); }.awardsSection { grid-template-columns: 1fr; }.quickActions, .publicProfilePanel { grid-template-columns: 1fr; }.profileActiveArea { grid-template-columns: 1fr; }.supplyCrate { opacity: .32; }
 }
 
 @media (max-width: 720px) {

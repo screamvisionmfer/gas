@@ -33,5 +33,36 @@ export type CommanderProfileMutation =
 export type CommanderProfileResponse = {
   profile: PublicCommanderProfile | null;
   profileUrl?: string;
+  positions?: CommanderLeaderboardPositions;
 };
 
+export type CommanderLeaderboardSort = "army" | "rank" | "newest";
+
+export type CommanderLeaderboardEntry = {
+  position: number;
+  username: string;
+  usernameNormalized: string;
+  displayName: string;
+  avatarUrl?: string;
+  memberSince: string;
+  publishedAt: string;
+  armySize: number;
+  rank: { id: string; name: string; unit?: string; insignia?: string; sortValue: number };
+  featuredSoldier?: Soldier;
+  armyLastSyncedAt: string;
+};
+
+export type CommanderLeaderboardResult = {
+  entries: CommanderLeaderboardEntry[];
+  sort: CommanderLeaderboardSort;
+  page: number;
+  pageSize: number;
+  totalProfiles: number;
+  totalPages: number;
+};
+
+export type CommanderLeaderboardPositions = {
+  army: number;
+  rank: number;
+  totalProfiles: number;
+} | null;

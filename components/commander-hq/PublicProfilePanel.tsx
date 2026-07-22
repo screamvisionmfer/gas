@@ -1,11 +1,13 @@
 "use client";
 
-import type { PublicCommanderProfile } from "@/lib/commander-profile-types";
+import Link from "next/link";
+import type { CommanderLeaderboardPositions, PublicCommanderProfile } from "@/lib/commander-profile-types";
 import styles from "./CommanderHQ.module.css";
 
 type Props = {
   profile: PublicCommanderProfile | null;
   profileUrl: string;
+  positions?: CommanderLeaderboardPositions;
   loading: boolean;
   busyAction: string;
   error: string;
@@ -23,7 +25,7 @@ function shareUrl(profile: PublicCommanderProfile, profileUrl: string) {
 }
 
 export function PublicProfilePanel(props: Props) {
-  const { profile, profileUrl, loading, busyAction, error, consent, onConsentChange, onCreate, onSync, onUnpublish, onCopy } = props;
+  const { profile, profileUrl, positions, loading, busyAction, error, consent, onConsentChange, onCreate, onSync, onUnpublish, onCopy } = props;
   const active = profile?.isPublic === true;
 
   return (
@@ -32,15 +34,24 @@ export function PublicProfilePanel(props: Props) {
         <span>PUBLIC PERSONNEL FILE</span>
         <h2 id="public-profile-title">COMMANDER DOSSIER</h2>
         <p>{active ? `Published as @${profile.username}` : "Create a public, shareable snapshot of your verified identity and on-chain Army."}</p>
+        {!active && !loading && <Link className={styles.leaderboardLink} href="/leaderboard">VIEW PUBLIC LEADERBOARD →</Link>}
       </div>
 
       {loading ? <strong className={styles.profileStatus}>CHECKING PUBLIC FILE…</strong> : active ? (
-        <div className={styles.profileActions}>
-          <button type="button" onClick={onCopy}>COPY PROFILE LINK</button>
-          <a href={profileUrl} target="_blank" rel="noreferrer">OPEN PUBLIC PROFILE</a>
-          <a href={shareUrl(profile, profileUrl)} target="_blank" rel="noreferrer">SHARE TO X</a>
-          <button type="button" onClick={onSync} disabled={Boolean(busyAction)}>{busyAction === "sync" ? "SYNCING…" : "SYNC PUBLIC PROFILE"}</button>
-          <button type="button" onClick={onUnpublish} disabled={Boolean(busyAction)}>{busyAction === "unpublish" ? "UNPUBLISHING…" : "UNPUBLISH PROFILE"}</button>
+        <div className={styles.profileActiveArea}>
+          {positions && <div className={styles.globalPosition}>
+            <span>YOUR GLOBAL POSITION</span>
+            <strong>#{positions.army}<small> OF {positions.totalProfiles}</small></strong>
+            <p><b>ARMY RANKING #{positions.army}</b><b>RANK CLASSIFICATION #{positions.rank}</b></p>
+            <Link href="/leaderboard">VIEW FULL LEADERBOARD →</Link>
+          </div>}
+          <div className={styles.profileActions}>
+            <button type="button" onClick={onCopy}>COPY PROFILE LINK</button>
+            <a href={profileUrl} target="_blank" rel="noreferrer">OPEN PUBLIC PROFILE</a>
+            <a href={shareUrl(profile, profileUrl)} target="_blank" rel="noreferrer">SHARE TO X</a>
+            <button type="button" onClick={onSync} disabled={Boolean(busyAction)}>{busyAction === "sync" ? "SYNCING…" : "SYNC PUBLIC PROFILE"}</button>
+            <button type="button" onClick={onUnpublish} disabled={Boolean(busyAction)}>{busyAction === "unpublish" ? "UNPUBLISHING…" : "UNPUBLISH PROFILE"}</button>
+          </div>
         </div>
       ) : (
         <div className={styles.profilePublishControls}>
@@ -55,4 +66,3 @@ export function PublicProfilePanel(props: Props) {
     </section>
   );
 }
-
