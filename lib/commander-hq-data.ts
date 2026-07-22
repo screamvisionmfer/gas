@@ -25,19 +25,5 @@ export const mockCommanderDashboard: CommanderDashboardData = {
     // Simulation-only portfolio input. This is not derived from the connected wallet yet.
     averageBuyPriceUsd: 0.01723,
   },
-  medals: [
-    { id: "first-wave", name: "First Wave", code: "01", unlocked: true },
-    { id: "army-builder", name: "Army Builder", code: "10", unlocked: true },
-    { id: "diamond-hands", name: "Diamond Hands", code: "30", unlocked: true },
-    { id: "signal-corps", name: "Signal Corps", code: "X", unlocked: true },
-    { id: "high-command", name: "High Command", code: "HC", unlocked: false },
-  ],
-  achievements: [
-    { id: "early", name: "Early Recruit", description: "Joined among the first 100 commanders", state: "unlocked" },
-    { id: "diamond", name: "Diamond Hands", description: "Held $GROYPER for 30 days", state: "unlocked" },
-    { id: "builder", name: "Army Builder", description: "Own 10+ GAS soldiers", state: "progress", progress: 82 },
-    { id: "supreme", name: "Supreme Command", description: "Reach the highest collection rank", state: "locked" },
-    { id: "classified", name: "Classified Operation", description: "Hidden achievement", state: "hidden" },
-  ],
   dataMode: "hybrid",
 };

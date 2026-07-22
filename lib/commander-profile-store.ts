@@ -178,7 +178,7 @@ export async function upsertCommanderProfile(input: ProfileSnapshotInput) {
     username = EXCLUDED.username, username_normalized = EXCLUDED.username_normalized,
     display_name = EXCLUDED.display_name, avatar_url = EXCLUDED.avatar_url,
     primary_wallet = EXCLUDED.primary_wallet, member_since = EXCLUDED.member_since,
-    updated_at = NOW(), published_at = CASE WHEN public_commander_profiles.is_public THEN public_commander_profiles.published_at ELSE NOW() END,
+    updated_at = NOW(), published_at = public_commander_profiles.published_at,
     is_public = EXCLUDED.is_public, featured_soldier_mint = EXCLUDED.featured_soldier_mint,
     featured_soldier = EXCLUDED.featured_soldier, army_size = EXCLUDED.army_size,
     army_snapshot = EXCLUDED.army_snapshot, rank_id = EXCLUDED.rank_id, rank_name = EXCLUDED.rank_name,

@@ -1,0 +1,41 @@
+.podiumAwards,
+.rowAwards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+}
+
+.rowAwards {
+  justify-content: flex-start;
+  margin-top: 5px;
+}
+
+.miniAward {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #4e5f20;
+}
+
+.miniAward b {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #9a7b18;
+  background: #17200e;
+  color: #d8af27;
+  font: 12px var(--font-heading), Impact, sans-serif;
+  clip-path: polygon(50% 0, 94% 18%, 100% 72%, 50% 100%, 0 72%, 6% 18%);
+}
+
+.miniAward em {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

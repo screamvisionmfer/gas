@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import type { CommanderDashboardData, CommanderIdentity } from "@/lib/commander-hq-types";
 import { Header, Footer } from "@/components/LandingPage";
 import { CommanderArmyController } from "./CommanderArmyController";
-import { MedalsSection } from "./MedalsSection";
 import { QuickActions } from "./QuickActions";
 import { useCommanderIdentity } from "./CommanderIdentityProvider";
 import styles from "./CommanderHQ.module.css";
@@ -134,7 +133,6 @@ export function CommanderIdentityGateway({ data }: { data: CommanderDashboardDat
           onLogoutIdentity={logoutIdentity}
           identityBusy={operation !== "idle"}
         />
-        <MedalsSection medals={data.medals} achievements={data.achievements} />
         <QuickActions onBeforeLock={logoutIdentity} />
       </div>
       <Footer />

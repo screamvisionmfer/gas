@@ -9,6 +9,8 @@ import {
   ensureCommanderProfileSchema,
   getCommanderDatabase,
 } from "./commander-profile-store";
+import { awardDefinition, currentStatusAwardId } from "./commander-awards-config";
+import { ensureCommanderAwardsSchema } from "./commander-awards-store";
 
 const PAGE_SIZE = 25;
 
@@ -27,6 +29,7 @@ type LeaderboardRow = {
   rank_insignia: string | null;
   rank_sort_value: number;
   featured_soldier: unknown;
+  award_ids: unknown;
   army_last_synced_at: string | Date;
 };
 
@@ -38,6 +41,13 @@ function rowToEntry(row: LeaderboardRow): CommanderLeaderboardEntry {
   const featured = row.featured_soldier && typeof row.featured_soldier === "object"
     ? row.featured_soldier as CommanderLeaderboardEntry["featuredSoldier"]
     : undefined;
+  const permanent = Array.isArray(row.award_ids) ? row.award_ids.map(String).map(awardDefinition).filter((award) => award !== undefined) : [];
+  const status = currentStatusAwardId(Number(row.position));
+  const awards = [...(status ? [awardDefinition(status)] : []), ...permanent]
+    .filter((award) => award !== undefined)
+    .sort((a, b) => b.publicPriority - a.publicPriority)
+    .slice(0, 3)
+    .map((award) => ({ ...award, unlocked: true }));
   return {
     position: Number(row.position),
     username: row.username,
@@ -55,6 +65,7 @@ function rowToEntry(row: LeaderboardRow): CommanderLeaderboardEntry {
       sortValue: row.rank_sort_value,
     },
     featuredSoldier: featured,
+    awards,
     armyLastSyncedAt: iso(row.army_last_synced_at),
   };
 }
@@ -65,8 +76,9 @@ async function leaderboardRows(sort: CommanderLeaderboardSort, limit: number, of
     const rows = await db`WITH ranked AS (
       SELECT ROW_NUMBER() OVER (ORDER BY rank_sort_value DESC, army_size DESC, published_at ASC, username_normalized ASC) AS position,
         username, username_normalized, display_name, avatar_url, member_since, published_at, army_size,
-        rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at
-      FROM public_commander_profiles
+        rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at,
+        COALESCE((SELECT JSONB_AGG(ca.award_id) FROM commander_awards ca WHERE ca.profile_id = p.id AND ca.award_type = 'permanent'), '[]'::jsonb) AS award_ids
+      FROM public_commander_profiles p
       WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''
     ) SELECT * FROM ranked ORDER BY position LIMIT ${limit} OFFSET ${offset}`;
     return rows as LeaderboardRow[];
@@ -75,8 +87,9 @@ async function leaderboardRows(sort: CommanderLeaderboardSort, limit: number, of
     const rows = await db`WITH ranked AS (
       SELECT ROW_NUMBER() OVER (ORDER BY published_at DESC, username_normalized ASC) AS position,
         username, username_normalized, display_name, avatar_url, member_since, published_at, army_size,
-        rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at
-      FROM public_commander_profiles
+        rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at,
+        COALESCE((SELECT JSONB_AGG(ca.award_id) FROM commander_awards ca WHERE ca.profile_id = p.id AND ca.award_type = 'permanent'), '[]'::jsonb) AS award_ids
+      FROM public_commander_profiles p
       WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''
     ) SELECT * FROM ranked ORDER BY position LIMIT ${limit} OFFSET ${offset}`;
     return rows as LeaderboardRow[];
@@ -84,8 +97,9 @@ async function leaderboardRows(sort: CommanderLeaderboardSort, limit: number, of
   const rows = await db`WITH ranked AS (
     SELECT ROW_NUMBER() OVER (ORDER BY army_size DESC, rank_sort_value DESC, published_at ASC, username_normalized ASC) AS position,
       username, username_normalized, display_name, avatar_url, member_since, published_at, army_size,
-      rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at
-    FROM public_commander_profiles
+      rank_id, rank_name, rank_unit, rank_insignia, rank_sort_value, featured_soldier, army_last_synced_at,
+      COALESCE((SELECT JSONB_AGG(ca.award_id) FROM commander_awards ca WHERE ca.profile_id = p.id AND ca.award_type = 'permanent'), '[]'::jsonb) AS award_ids
+    FROM public_commander_profiles p
     WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''
   ) SELECT * FROM ranked ORDER BY position LIMIT ${limit} OFFSET ${offset}`;
   return rows as LeaderboardRow[];
@@ -93,7 +107,7 @@ async function leaderboardRows(sort: CommanderLeaderboardSort, limit: number, of
 
 export async function getCommanderLeaderboard(sort: CommanderLeaderboardSort, requestedPage: number): Promise<CommanderLeaderboardResult> {
   try {
-    await ensureCommanderProfileSchema();
+    await ensureCommanderAwardsSchema();
     const db = getCommanderDatabase();
     const totals = await db`SELECT COUNT(*)::int AS total FROM public_commander_profiles WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''` as Array<{ total: number }>;
     const totalProfiles = totals[0]?.total ?? 0;
@@ -118,6 +132,29 @@ export async function getCommanderLeaderboardPositions(privyId: string): Promise
       FROM public_commander_profiles
       WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''
     ) SELECT army_position, rank_position, total_profiles FROM public_profiles WHERE privy_id = ${privyId} LIMIT 1` as Array<{
+      army_position: string | number;
+      rank_position: string | number;
+      total_profiles: string | number;
+    }>;
+    if (!rows[0]) return null;
+    return { army: Number(rows[0].army_position), rank: Number(rows[0].rank_position), totalProfiles: Number(rows[0].total_profiles) };
+  } catch (error) {
+    if (error instanceof CommanderProfileStoreError) throw error;
+    throw new CommanderProfileStoreError("Commander leaderboard is temporarily unavailable.", "DATABASE_UNAVAILABLE");
+  }
+}
+
+export async function getCommanderLeaderboardPositionByProfileId(profileId: string): Promise<CommanderLeaderboardPositions> {
+  try {
+    await ensureCommanderProfileSchema();
+    const rows = await getCommanderDatabase()`WITH public_profiles AS (
+      SELECT id,
+        ROW_NUMBER() OVER (ORDER BY army_size DESC, rank_sort_value DESC, published_at ASC, username_normalized ASC) AS army_position,
+        ROW_NUMBER() OVER (ORDER BY rank_sort_value DESC, army_size DESC, published_at ASC, username_normalized ASC) AS rank_position,
+        COUNT(*) OVER () AS total_profiles
+      FROM public_commander_profiles
+      WHERE is_public = TRUE AND BTRIM(username) <> '' AND BTRIM(username_normalized) <> ''
+    ) SELECT army_position, rank_position, total_profiles FROM public_profiles WHERE id = ${profileId} LIMIT 1` as Array<{
       army_position: string | number;
       rank_position: string | number;
       total_profiles: string | number;

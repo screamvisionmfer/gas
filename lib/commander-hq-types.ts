@@ -84,26 +84,9 @@ export type GroyperMarketResponse = {
 
 export type LiveDataStatus = "idle" | "loading" | "ready" | "error";
 
-export type Medal = {
-  id: string;
-  name: string;
-  code: string;
-  unlocked: boolean;
-};
-
-export type Achievement = {
-  id: string;
-  name: string;
-  description: string;
-  state: "unlocked" | "locked" | "progress" | "hidden";
-  progress?: number;
-};
-
 export type CommanderDashboardData = {
   commander: CommanderProfile;
   soldiers: Soldier[];
   treasury: TreasuryData;
-  medals: Medal[];
-  achievements: Achievement[];
   dataMode: "mock" | "hybrid" | "live";
 };

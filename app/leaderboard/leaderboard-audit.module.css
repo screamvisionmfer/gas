@@ -1,0 +1,11 @@
+.audit p { font-size: var(--font-size-body); line-height: 1.45; }
+.audit small { font-size: var(--font-size-label); line-height: 1.3; }
+.audit nav a, .audit a[role="button"] { min-height: var(--control-min-height); font-size: var(--font-size-action); }
+.audit nav a { display: inline-flex; align-items: center; justify-content: center; }
+.audit .rosterRow { min-height: 92px; }
+.audit .pagination { font-size: var(--font-size-secondary); }
+
+@media (max-width: 640px) {
+  .audit .rosterRow { min-height: 88px; }
+  .audit .pagination nav { font-size: var(--font-size-label); }
+}

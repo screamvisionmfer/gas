@@ -5,12 +5,22 @@ import { type CommanderProfileMutation } from "@/lib/commander-profile-types";
 import { CommanderProfileStoreError, getCommanderProfileByPrivyId, unpublishCommanderProfile } from "@/lib/commander-profile-store";
 import { chooseFeaturedSoldier, CommanderProfileServiceError, publicProfileUrl, syncCommanderProfile } from "@/lib/commander-profile-service";
 import { getCommanderLeaderboardPositions } from "@/lib/commander-leaderboard-store";
+import { evaluateCommanderAwards, getCommanderAwardSummary } from "@/lib/commander-awards-service";
 
 export const runtime = "nodejs";
 
-async function response(profile: Awaited<ReturnType<typeof getCommanderProfileByPrivyId>>, privyId: string) {
+async function response(profile: Awaited<ReturnType<typeof getCommanderProfileByPrivyId>>, privyId: string, evaluateAwards = false) {
   const positions = profile?.isPublic ? await getCommanderLeaderboardPositions(privyId) : null;
-  return NextResponse.json({ profile, profileUrl: profile ? publicProfileUrl(profile) : undefined, positions });
+  let awards;
+  let awardsError = false;
+  if (profile) {
+    try {
+      awards = evaluateAwards ? await evaluateCommanderAwards(profile) : await getCommanderAwardSummary(profile);
+    } catch {
+      awardsError = true;
+    }
+  }
+  return NextResponse.json({ profile, profileUrl: profile ? publicProfileUrl(profile) : undefined, positions, awards, awardsError });
 }
 
 function errorResponse(error: unknown) {
@@ -24,6 +34,7 @@ function errorResponse(error: unknown) {
 function refresh(profile: NonNullable<Awaited<ReturnType<typeof getCommanderProfileByPrivyId>>>) {
   revalidateTag("commander-profiles", "max");
   revalidateTag("commander-leaderboard", "max");
+  revalidateTag("commander-awards", "max");
   revalidatePath(`/commander/${profile.usernameNormalized}`);
   revalidatePath(`/commander/${profile.usernameNormalized}/opengraph-image`);
   revalidatePath("/leaderboard");
@@ -45,7 +56,7 @@ export async function POST(request: Request) {
     if (body.publicConsent !== true) return NextResponse.json({ error: "PUBLIC_CONSENT_REQUIRED", message: "Confirm that the profile will be public." }, { status: 422 });
     const profile = await syncCommanderProfile(identity, { publish: true, bypassRateLimit: true });
     refresh(profile);
-    return response(profile, identity.privyId);
+    return response(profile, identity.privyId, true);
   } catch (error) {
     return errorResponse(error);
   }
@@ -69,7 +80,7 @@ export async function PATCH(request: Request) {
 
     if (!profile) return NextResponse.json({ error: "PROFILE_NOT_FOUND", message: "Commander profile not found." }, { status: 404 });
     refresh(profile);
-    return response(profile, identity.privyId);
+    return response(profile, identity.privyId, body.action !== "unpublish");
   } catch (error) {
     return errorResponse(error);
   }

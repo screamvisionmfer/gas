@@ -6,10 +6,14 @@ import { notFound, redirect } from "next/navigation";
 import { Header, Footer } from "@/components/LandingPage";
 import { PublicArmy } from "@/components/commander-profile/PublicArmy";
 import { SafeImage } from "@/components/commander-profile/SafeImage";
+import { AwardBadge } from "@/components/commander-profile/AwardBadge";
 import { CommanderProfileStoreError } from "@/lib/commander-profile-store";
 import { cachedCommanderAlias, cachedPublicCommanderProfile } from "@/lib/public-commander-profile";
 import { siteConfig } from "@/lib/site-config";
+import { getCommanderAwardSummary } from "@/lib/commander-awards-service";
+import type { CommanderAwardSummary } from "@/lib/commander-awards-types";
 import styles from "./CommanderProfile.module.css";
+import auditStyles from "./CommanderProfileAudit.module.css";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -55,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function Unavailable() {
-  return <main className={styles.publicPage}><Header /><section className={styles.fileState}><img src="/logo.png" alt="" /><span>GAS ARCHIVE NETWORK</span><h1>COMMANDER FILE UNAVAILABLE</h1><p>The personnel archive is temporarily offline. Try again shortly.</p></section><Footer /></main>;
+  return <main className={`${styles.publicPage} ${auditStyles.audit}`}><Header /><section className={styles.fileState}><img src="/logo.png" alt="" /><span>GAS ARCHIVE NETWORK</span><h1>COMMANDER FILE UNAVAILABLE</h1><p>The personnel archive is temporarily offline. Try again shortly.</p></section><Footer /></main>;
 }
 
 export default async function CommanderProfilePage({ params }: Props) {
@@ -69,13 +73,21 @@ export default async function CommanderProfilePage({ params }: Props) {
   }
   if (!profile) notFound();
 
+  let awards: CommanderAwardSummary | undefined;
+  let awardsUnavailable = false;
+  try {
+    awards = await getCommanderAwardSummary(profile);
+  } catch {
+    awardsUnavailable = true;
+  }
+
   const featured = profile.featuredSoldier ?? profile.army[0];
   const profileUrl = `${siteConfig.canonicalUrl}/commander/${encodeURIComponent(profile.usernameNormalized)}`;
   const shareText = `I command ${profile.armySize} soldiers in the Groypers Alpha Squadron.\n\nCurrent rank: ${profile.rank.name}.\n\nView my commander dossier:`;
   const xShare = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(profileUrl)}`;
 
   return (
-    <main className={styles.publicPage}>
+    <main className={`${styles.publicPage} ${auditStyles.audit}`}>
       <Header />
       <div className={styles.dossierShell}>
         <div className={styles.fileTab}>GAS PERSONNEL ARCHIVE · FILE {profile.id.slice(0, 8).toUpperCase()}</div>
@@ -123,6 +135,11 @@ export default async function CommanderProfilePage({ params }: Props) {
           <div><span>GAS SERVICE RECORD</span><h2>PERSONNEL FILE</h2></div>
           <dl><div><dt>STATUS</dt><dd>ACTIVE COMMANDER</dd></div><div><dt>CURRENT RANK</dt><dd>{profile.rank.name}</dd></div><div><dt>ARMY STRENGTH</dt><dd>{profile.armySize}</dd></div><div><dt>LAST VERIFIED</dt><dd>{date(profile.armyLastSyncedAt)}</dd></div></dl>
           <p>PUBLIC SNAPSHOT · ON-CHAIN ARMY VERIFIED THROUGH THE GAS PERSONNEL NETWORK</p>
+        </section>
+
+        <section className={styles.decorations} aria-labelledby="decorations-title">
+          <header><div><span>VERIFIED SERVICE RECORD</span><h2 id="decorations-title">SERVICE DECORATIONS</h2></div>{awards && <strong>{awards.unlockedCount}<small>DECORATIONS EARNED</small></strong>}</header>
+          {awardsUnavailable ? <p className={styles.decorationsState}>SERVICE RECORD TEMPORARILY UNAVAILABLE</p> : awards && awards.unlocked.length > 0 ? <div className={styles.decorationGrid}>{awards.unlocked.slice(0, 10).map((award) => <AwardBadge key={award.id} award={award} className={styles.awardBadge} />)}</div> : <p className={styles.decorationsState}>NO SERVICE DECORATIONS UNLOCKED</p>}
         </section>
       </div>
       <Footer />

@@ -1,4 +1,5 @@
 import type { Soldier } from "./commander-hq-types";
+import type { CommanderAward, CommanderAwardSummary } from "./commander-awards-types";
 
 export type PublicCommanderProfile = {
   id: string;
@@ -34,6 +35,8 @@ export type CommanderProfileResponse = {
   profile: PublicCommanderProfile | null;
   profileUrl?: string;
   positions?: CommanderLeaderboardPositions;
+  awards?: CommanderAwardSummary;
+  awardsError?: boolean;
 };
 
 export type CommanderLeaderboardSort = "army" | "rank" | "newest";
@@ -49,6 +52,7 @@ export type CommanderLeaderboardEntry = {
   armySize: number;
   rank: { id: string; name: string; unit?: string; insignia?: string; sortValue: number };
   featuredSoldier?: Soldier;
+  awards: CommanderAward[];
   armyLastSyncedAt: string;
 };
 

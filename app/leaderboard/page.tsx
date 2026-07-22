@@ -4,11 +4,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer, Header } from "@/components/LandingPage";
 import { SafeImage } from "@/components/commander-profile/SafeImage";
+import { AwardBadge } from "@/components/commander-profile/AwardBadge";
 import type { CommanderLeaderboardEntry, CommanderLeaderboardSort } from "@/lib/commander-profile-types";
 import { CommanderProfileStoreError } from "@/lib/commander-profile-store";
 import { getCachedCommanderLeaderboard } from "@/lib/public-commander-leaderboard";
 import { siteConfig } from "@/lib/site-config";
 import styles from "./leaderboard.module.css";
+import awardStyles from "./leaderboard-awards.module.css";
+import auditStyles from "./leaderboard-audit.module.css";
 
 type Props = { searchParams: Promise<{ sort?: string; page?: string }> };
 
@@ -64,6 +67,7 @@ function PodiumCard({ entry }: { entry: CommanderLeaderboardEntry }) {
       <span className={styles.clearance}>PUBLIC COMMAND FILE</span>
       <h2>{entry.displayName}</h2>
       <p>@{entry.username}</p>
+      {entry.awards.length > 0 && <div className={awardStyles.podiumAwards}>{entry.awards.map((award) => <AwardBadge key={award.id} award={award} className={awardStyles.miniAward} />)}</div>}
       <div className={styles.podiumStats}><strong>{entry.armySize}<small>SOLDIERS</small></strong><span>{entry.rank.name}<small>{entry.rank.unit ?? "GAS COMMAND"}</small></span></div>
       <em>VIEW DOSSIER →</em>
     </Link>
@@ -75,7 +79,7 @@ function RosterRow({ entry }: { entry: CommanderLeaderboardEntry }) {
     <Link className={styles.rosterRow} href={commanderUrl(entry)}>
       <strong className={styles.rowPosition}>#{entry.position}</strong>
       <SafeImage className={styles.avatar} src={entry.avatarUrl} alt="" />
-      <span className={styles.identity}><b>{entry.displayName}</b><small>@{entry.username}</small></span>
+      <span className={styles.identity}><b>{entry.displayName}</b><small>@{entry.username}</small>{entry.awards.length > 0 && <span className={awardStyles.rowAwards}>{entry.awards.map((award) => <AwardBadge key={award.id} award={award} className={awardStyles.miniAward} />)}</span>}</span>
       <span className={styles.rank}><SafeImage src={entry.rank.insignia} alt="" /><b>{entry.rank.name}</b><small>{entry.rank.unit ?? "GAS COMMAND"}</small></span>
       <span className={styles.strength}><b>{entry.armySize}</b><small>ACTIVE RECRUITS</small></span>
       <span className={styles.sync}>{freshness(entry.armyLastSyncedAt)}</span>
@@ -86,7 +90,7 @@ function RosterRow({ entry }: { entry: CommanderLeaderboardEntry }) {
 }
 
 function Unavailable() {
-  return <main className={styles.page}><Header /><section className={styles.state}><img src="/logo.png" alt="" /><span>GAS COMMAND NETWORK</span><h1>REGISTRY OFFLINE</h1><p>The public command registry is temporarily unavailable. Try again shortly.</p></section><Footer /></main>;
+  return <main className={`${styles.page} ${auditStyles.audit}`}><Header /><section className={styles.state}><img src="/logo.png" alt="" /><span>GAS COMMAND NETWORK</span><h1>REGISTRY OFFLINE</h1><p>The public command registry is temporarily unavailable. Try again shortly.</p></section><Footer /></main>;
 }
 
 export default async function LeaderboardPage({ searchParams }: Props) {
@@ -106,7 +110,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   const lastShown = Math.min(data.page * data.pageSize, data.totalProfiles);
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${auditStyles.audit}`}>
       <Header />
       <section className={styles.hero}>
         <div className={styles.heroSeal}><img src="/logo.png" alt="" /></div>

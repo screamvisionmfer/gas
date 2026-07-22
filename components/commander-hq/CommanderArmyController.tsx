@@ -14,12 +14,14 @@ import type {
   TreasuryData,
 } from "@/lib/commander-hq-types";
 import type { CommanderLeaderboardPositions, CommanderProfileResponse, PublicCommanderProfile } from "@/lib/commander-profile-types";
+import type { CommanderAwardSummary } from "@/lib/commander-awards-types";
 import { CommanderHero } from "./CommanderHero";
 import { ArmySection, type ArmyLoadStatus } from "./ArmySection";
 import { TreasurySection } from "./TreasurySection";
 import { MarketIntelSection } from "./MarketIntelSection";
 import { PublicProfilePanel } from "./PublicProfilePanel";
 import { useCommanderIdentity } from "./CommanderIdentityProvider";
+import { MedalsSection } from "./MedalsSection";
 
 function traitValue(nft: OwnedNft, traitName: string) {
   return nft.attributes?.find((attribute) => attribute.trait_type.toLowerCase() === traitName.toLowerCase())?.value;
@@ -140,6 +142,8 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
   const [publicProfile, setPublicProfile] = useState<PublicCommanderProfile | null>(null);
   const [profileUrl, setProfileUrl] = useState("");
   const [leaderboardPositions, setLeaderboardPositions] = useState<CommanderLeaderboardPositions>();
+  const [awards, setAwards] = useState<CommanderAwardSummary>();
+  const [awardsError, setAwardsError] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileAction, setProfileAction] = useState("");
   const [profileError, setProfileError] = useState("");
@@ -271,6 +275,8 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
     setPublicProfile(payload.profile);
     setProfileUrl(payload.profileUrl ?? "");
     setLeaderboardPositions(payload.positions);
+    setAwards(payload.awards);
+    setAwardsError(payload.awardsError === true);
     return payload.profile;
   }, [getAuthToken]);
 
@@ -378,6 +384,13 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
         status={marketStatus}
         error={marketError}
         onRefresh={refreshLiveData}
+      />
+      <MedalsSection
+        summary={awards}
+        loading={profileLoading}
+        unavailable={awardsError}
+        profile={publicProfile}
+        profileUrl={profileUrl}
       />
     </>
   );
