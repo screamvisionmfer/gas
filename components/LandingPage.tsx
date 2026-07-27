@@ -34,10 +34,10 @@ export function Header() {
           {navItems.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
         </nav>
         <div className="header-actions">
+          <a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer" className="social-link x-link" aria-label="X / Twitter">𝕏</a>
           <a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer" className="social-link telegram-link" aria-label="$GROYPER Telegram chat">TG</a>
-          <a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X / Twitter">𝕏</a>
           {siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)} target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Discord">D</a>}
-          <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold header-mint">MINT ON LAUNCHMYNFT</a>
+          <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold header-mint"><span>MINT NOW</span><small>LAUNCHMYNFT</small></a>
           <button className="menu-toggle" type="button" onClick={() => setOpen(true)} aria-label="Open navigation" aria-expanded={open}><span /><span /><span /></button>
         </div>
       </div>
@@ -48,8 +48,10 @@ export function Header() {
             <nav aria-label="Mobile navigation">
               {navItems.map(([label, href], index) => <motion.div key={href} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}><Link href={href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{label}</Link></motion.div>)}
             </nav>
-            <a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer" className="button button-outline-light button-full mobile-telegram">JOIN $GROYPER TELEGRAM</a>
-            <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold button-full">MINT ON LAUNCHMYNFT</a>
+            <div className="mobile-menu-actions">
+              <a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer" className="button mobile-telegram"><span>JOIN TELEGRAM</span><small>$GROYPER CHAT</small></a>
+              <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold"><span>MINT NOW</span><small>LAUNCHMYNFT</small></a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
