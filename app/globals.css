@@ -82,9 +82,12 @@ body .reveal-personalization label, body .reveal-personalization label small, bo
 .desktop-nav a:hover::after { transform: scaleX(1); }
 .header-actions { display: flex; align-items: center; gap: 14px; }
 .social-link { font-size: 24px; line-height: 1; }
+.telegram-link { min-width: 42px; min-height: 42px; border: 1px solid #7f8f48; padding: 0 8px; color: #b8d84a; font: 14px/1 var(--heading); letter-spacing: .06em; }
+.telegram-link:hover { border-color: #b8d84a; background: #202a14; color: #e6bc31; }
 .menu-toggle { display: none; width: 46px; height: 46px; border: 1px solid #737862; background: transparent; padding: 11px; cursor: pointer; }
 .menu-toggle span { display: block; height: 2px; margin: 5px 0; background: #f3efe3; }
 .mobile-menu { display: none; }
+.mobile-telegram { margin-bottom: 9px; color: #b8d84a; border-color: #7f8f48; }
 
 .button { min-height: 47px; display: inline-flex; align-items: center; justify-content: center; padding: 11px 22px; border: 1.5px solid var(--ink); font-family: var(--heading); font-size: 15px; letter-spacing: .7px; line-height: 1; text-align: center; cursor: pointer; transition: transform .18s, box-shadow .18s, background .18s; }
 .button:hover { transform: translateY(-2px); box-shadow: 3px 4px 0 rgba(17,19,15,.25); }

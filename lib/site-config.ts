@@ -9,6 +9,7 @@ export const siteConfig = {
   contractAddress: groyperConfig.tokenMint,
   collectionAddress: "DS54gL9wUofvjd9V7iVmMWk1Pwx2vf4G4mW1Kci6t239",
   twitterUrl: "https://x.com/GroyperPump",
+  telegramUrl: "https://t.me/GroyperChat44",
   discordUrl: "",
   launchMyNftUrl: "https://launchmynft.io/collections/2Fbg8k4Cz1vfTCSBVKG15sFzRh6yLroJuH3zpM4FqLPo/klGgAOjY2RrRiZ08VBBa",
   knowYourMemeUrl: "https://knowyourmeme.com/memes/groyper",

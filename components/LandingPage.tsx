@@ -34,6 +34,7 @@ export function Header() {
           {navItems.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
         </nav>
         <div className="header-actions">
+          <a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer" className="social-link telegram-link" aria-label="$GROYPER Telegram chat">TG</a>
           <a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer" className="social-link" aria-label="X / Twitter">𝕏</a>
           {siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)} target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Discord">D</a>}
           <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold header-mint">MINT ON LAUNCHMYNFT</a>
@@ -47,6 +48,7 @@ export function Header() {
             <nav aria-label="Mobile navigation">
               {navItems.map(([label, href], index) => <motion.div key={href} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}><Link href={href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{label}</Link></motion.div>)}
             </nav>
+            <a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer" className="button button-outline-light button-full mobile-telegram">JOIN $GROYPER TELEGRAM</a>
             <a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer" className="button button-gold button-full">MINT ON LAUNCHMYNFT</a>
           </motion.div>
         )}
@@ -248,7 +250,7 @@ export function Footer() {
         <div className="footer-brand"><img src="/logo.png" width="74" height="74" alt="GAS logo" /><div><strong>GROYPERS<br /><span>ALPHA SQUADRON</span></strong><p>The token is the signal.<br />The squadron is the amplifier.</p></div></div>
         <div><h3>NAVIGATION</h3>{navItems.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}</div>
         <div><h3>RESOURCES</h3><Link href="/materials">Squadron Materials</Link><a href={safeExternalUrl(siteConfig.launchMyNftUrl)} target="_blank" rel="noopener noreferrer">LaunchMyNFT</a><a href={safeExternalUrl(siteConfig.tokenWebsiteUrl)} target="_blank" rel="noopener noreferrer">{siteConfig.token} Website</a><a href={safeExternalUrl(siteConfig.tokenUrl)} target="_blank" rel="noopener noreferrer">Get {siteConfig.token}</a><a href={safeExternalUrl(siteConfig.knowYourMemeUrl)} target="_blank" rel="noopener noreferrer">Know Your Meme</a></div>
-        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Founder</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}</div>
+        <div><h3>CONNECT</h3><a href={safeExternalUrl(siteConfig.twitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Groyper</a><a href={safeExternalUrl(siteConfig.telegramUrl)} target="_blank" rel="noopener noreferrer">Telegram / $GROYPER</a><a href={safeExternalUrl(siteConfig.creatorTwitterUrl)} target="_blank" rel="noopener noreferrer">𝕏 / Founder</a>{siteConfig.discordUrl && <a href={safeExternalUrl(siteConfig.discordUrl)}>Discord</a>}</div>
         <ContractAddress dark />
       </div>
       <div className="footer-bottom">© {year} {siteConfig.name} <span>·</span> {siteConfig.network} collection <span>·</span> One token. One squadron.</div>
