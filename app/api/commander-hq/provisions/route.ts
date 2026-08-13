@@ -7,10 +7,7 @@ import { isSolanaAddress } from "@/lib/nft-verification";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!(await hasCommanderApiSession())) {
-    return NextResponse.json({ error: "COMMANDER_SESSION_REQUIRED" }, { status: 401, headers: { "Cache-Control": "no-store" } });
-  }
-
+  if (!(await hasCommanderApiSession())) return NextResponse.json({ error: "COMMANDER_SESSION_REQUIRED" }, { status: 401, headers: { "Cache-Control": "no-store" } });
   let body: { wallet?: string };
   try {
     body = await request.json() as { wallet?: string };

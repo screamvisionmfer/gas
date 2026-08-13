@@ -22,6 +22,7 @@ import { MarketIntelSection } from "./MarketIntelSection";
 import { PublicProfilePanel } from "./PublicProfilePanel";
 import { useCommanderIdentity } from "./CommanderIdentityProvider";
 import { MedalsSection } from "./MedalsSection";
+import { PayrollSection } from "./PayrollSection";
 
 function traitValue(nft: OwnedNft, traitName: string) {
   return nft.attributes?.find((attribute) => attribute.trait_type.toLowerCase() === traitName.toLowerCase())?.value;
@@ -369,6 +370,7 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
         featuredBusyMint={profileAction.startsWith("feature:") ? profileAction.slice(8) : ""}
         onSetFeatured={(mint) => void mutateProfile(`feature:${mint}`, "PATCH", { action: "set-featured", mint })}
       />
+      <PayrollSection key={wallet} soldiers={soldiers} armyStatus={status} walletConnected={Boolean(wallet)} />
       <TreasurySection
         treasury={treasury}
         balance={balance}

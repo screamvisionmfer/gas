@@ -2,20 +2,12 @@ import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 
 export const COMMANDER_SESSION_COOKIE = "gas_commander_hq";
 export const COMMANDER_SESSION_MAX_AGE = 60 * 60 * 24 * 7;
+const COMMANDER_ACCESS_CODE = "1337";
 
-type SessionPayload = {
-  version: 1;
-  expiresAt: number;
-};
+type SessionPayload = { version: 1; expiresAt: number };
 
 function production() {
   return process.env.NODE_ENV === "production";
-}
-
-function password() {
-  const configured = process.env.COMMANDER_HQ_PASSWORD;
-  if (configured) return configured;
-  throw new Error("COMMANDER_HQ_PASSWORD is not configured.");
 }
 
 function sessionSecret() {
@@ -35,14 +27,11 @@ function safeEqual(left: string, right: string) {
 }
 
 export function verifyCommanderPassword(candidate: string) {
-  return safeEqual(candidate, password());
+  return safeEqual(candidate, COMMANDER_ACCESS_CODE);
 }
 
 export function createCommanderSession() {
-  const payload: SessionPayload = {
-    version: 1,
-    expiresAt: Date.now() + COMMANDER_SESSION_MAX_AGE * 1000,
-  };
+  const payload: SessionPayload = { version: 1, expiresAt: Date.now() + COMMANDER_SESSION_MAX_AGE * 1000 };
   const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
   return `${encoded}.${sign(encoded)}`;
 }
@@ -51,11 +40,9 @@ export function verifyCommanderSession(value?: string) {
   if (!value) return false;
   const [encoded, suppliedSignature] = value.split(".");
   if (!encoded || !suppliedSignature) return false;
-  const expectedSignature = sign(encoded);
   const supplied = Buffer.from(suppliedSignature);
-  const expected = Buffer.from(expectedSignature);
+  const expected = Buffer.from(sign(encoded));
   if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return false;
-
   try {
     const payload = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as SessionPayload;
     return payload.version === 1 && payload.expiresAt > Date.now();
@@ -65,11 +52,5 @@ export function verifyCommanderSession(value?: string) {
 }
 
 export function commanderCookieOptions() {
-  return {
-    httpOnly: true,
-    sameSite: "lax" as const,
-    secure: production(),
-    path: "/",
-    maxAge: COMMANDER_SESSION_MAX_AGE,
-  };
+  return { httpOnly: true, sameSite: "lax" as const, secure: production(), path: "/", maxAge: COMMANDER_SESSION_MAX_AGE };
 }

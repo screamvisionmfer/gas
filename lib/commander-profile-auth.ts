@@ -41,9 +41,7 @@ export type VerifiedCommanderIdentity = {
 };
 
 export async function requireVerifiedCommander(request: Request): Promise<VerifiedCommanderIdentity> {
-  if (!(await hasCommanderApiSession())) {
-    throw new CommanderProfileAuthError("Commander HQ session required.", "COMMANDER_SESSION_REQUIRED", 401);
-  }
+  if (!(await hasCommanderApiSession())) throw new CommanderProfileAuthError("Commander HQ session required.", "COMMANDER_SESSION_REQUIRED", 401);
 
   const token = bearerToken(request);
   if (!token) throw new CommanderProfileAuthError("Privy access token required.", "PRIVY_TOKEN_REQUIRED", 401);
@@ -74,4 +72,3 @@ export async function requireVerifiedCommander(request: Request): Promise<Verifi
     throw new CommanderProfileAuthError("Privy verification failed.", "PRIVY_VERIFICATION_FAILED", 401);
   }
 }
-

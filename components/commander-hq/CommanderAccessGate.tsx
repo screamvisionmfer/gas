@@ -16,8 +16,8 @@ export function CommanderAccessGate({ configurationError = false }: { configurat
   useEffect(() => {
     const message = "ESTABLISHING ENCRYPTED FIELD LINK...";
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const reducedTimer = window.setTimeout(() => setBootLine(message), 0);
-      return () => window.clearTimeout(reducedTimer);
+      const timer = window.setTimeout(() => setBootLine(message), 0);
+      return () => window.clearTimeout(timer);
     }
     let index = 0;
     const timer = window.setInterval(() => {
@@ -35,7 +35,6 @@ export function CommanderAccessGate({ configurationError = false }: { configurat
     setPassword("");
     setStatus("loading");
     setError("");
-
     try {
       const response = await fetch("/api/commander-hq/login", {
         method: "POST",
@@ -47,17 +46,13 @@ export function CommanderAccessGate({ configurationError = false }: { configurat
         const retry = payload.retryAfter ? ` · RETRY IN ${Math.ceil(payload.retryAfter / 60)} MIN` : "";
         throw new Error(`${payload.error ?? "SECURE NETWORK ERROR"}${retry}`);
       }
-
       setStatus("accepted");
       const lines = ["ACCESS CODE ACCEPTED", "CLEARANCE CONFIRMED", "OPENING COMMANDER HQ..."];
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) {
-        setAcceptedLines(lines);
-      } else {
-        for (const line of lines) {
-          await new Promise((resolve) => window.setTimeout(resolve, 260));
-          setAcceptedLines((current) => [...current, line]);
-        }
+      if (reduced) setAcceptedLines(lines);
+      else for (const line of lines) {
+        await new Promise((resolve) => window.setTimeout(resolve, 260));
+        setAcceptedLines((current) => [...current, line]);
       }
       window.setTimeout(() => window.location.replace("/commander-hq"), reduced ? 60 : 360);
     } catch (authError) {
@@ -71,46 +66,23 @@ export function CommanderAccessGate({ configurationError = false }: { configurat
     <main className={styles.accessPage}>
       <div className={styles.accessScanlines} aria-hidden="true" />
       <section className={styles.accessTerminal} aria-labelledby="access-title">
-        <div className={styles.accessTerminalTop}>
-          <span>GAS SECURE NETWORK</span>
-          <b>NODE 44 / ENCRYPTED</b>
-        </div>
+        <div className={styles.accessTerminalTop}><span>GAS SECURE NETWORK</span><b>NODE 44 / ENCRYPTED</b></div>
         <img src="/logo.png" width="96" height="96" alt="Groypers Alpha Squadron" />
         <p className={styles.bootLine}>{bootLine}<i aria-hidden="true" /></p>
         <h1 id="access-title">COMMANDER HQ<br />ACCESS TERMINAL</h1>
-        <div className={styles.terminalPrompt}>
-          <span>&gt; IDENTIFICATION REQUIRED</span>
-          <span>&gt; ENTER ACCESS CODE</span>
-        </div>
-
+        <div className={styles.terminalPrompt}><span>&gt; IDENTIFICATION REQUIRED</span><span>&gt; ENTER ACCESS CODE</span></div>
         {status === "accepted" ? (
-          <div className={styles.accessAccepted} role="status" aria-live="polite">
-            {acceptedLines.map((line) => <strong key={line}>{line}</strong>)}
-          </div>
+          <div className={styles.accessAccepted} role="status" aria-live="polite">{acceptedLines.map((line) => <strong key={line}>{line}</strong>)}</div>
         ) : (
           <form onSubmit={authorize} className={styles.accessForm}>
             <label htmlFor="commander-access-code">ACCESS CODE</label>
             <div>
-              <input
-                ref={inputRef}
-                id="commander-access-code"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoFocus
-                autoComplete="current-password"
-                disabled={status === "loading" || configurationError}
-              />
-              <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Hide password" : "Show password"}>
-                {showPassword ? "HIDE" : "SHOW"}
-              </button>
+              <input ref={inputRef} id="commander-access-code" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} autoFocus autoComplete="current-password" disabled={status === "loading" || configurationError} />
+              <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? "HIDE" : "SHOW"}</button>
             </div>
-            <button className={styles.authorizeButton} type="submit" disabled={status === "loading" || !password || configurationError}>
-              {status === "loading" ? "AUTHORIZING..." : "AUTHORIZE"}
-            </button>
+            <button className={styles.authorizeButton} type="submit" disabled={status === "loading" || !password || configurationError}>{status === "loading" ? "AUTHORIZING..." : "AUTHORIZE"}</button>
           </form>
         )}
-
         <p className={styles.accessError} aria-live="assertive">{error}</p>
         <small className={styles.accessFoot}>ACCESS LIMITED TO CLEARED PERSONNEL</small>
       </section>

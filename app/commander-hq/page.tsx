@@ -15,13 +15,11 @@ export default async function CommanderHQRoute() {
   const cookieStore = await cookies();
   let authorized = false;
   let configurationError = false;
-
   try {
     authorized = verifyCommanderSession(cookieStore.get(COMMANDER_SESSION_COOKIE)?.value);
   } catch {
     configurationError = true;
   }
-
   if (!authorized) return <CommanderAccessGate configurationError={configurationError} />;
 
   const [{ CommanderDashboard, CommanderDashboardError }, { commanderDataProvider }] = await Promise.all([

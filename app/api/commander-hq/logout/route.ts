@@ -6,4 +6,3 @@ export async function POST() {
   response.cookies.set(COMMANDER_SESSION_COOKIE, "", { ...commanderCookieOptions(), maxAge: 0 });
   return response;
 }
-

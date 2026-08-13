@@ -93,26 +93,15 @@ The response is a real PNG produced by the server-side `sharp` renderer with the
 
 ## Commander HQ
 
-`/commander-hq` is protected on the server. Unauthenticated responses contain only the access terminal; the dashboard data and components are not rendered until the signed session cookie has been verified. Add both values to every Vercel environment that should expose the page:
-
-```env
-COMMANDER_HQ_PASSWORD=
-COMMANDER_HQ_SESSION_SECRET=
-```
-
-Keep the real values only in `.env.local` and the Vercel environment settings. Never commit an access code or session secret.
-
-The session cookie is HTTP-only, `SameSite=Lax`, secure in production, and valid for seven days. `LOCK TERMINAL` invalidates it immediately.
+`/commander-hq` currently uses the temporary shared access code `1337` before the Privy identity flow. The signed session still requires `COMMANDER_HQ_SESSION_SECRET` in Vercel and local environments. X authentication and a linked external Solana wallet continue protecting identity-specific Commander actions.
 
 The profile, treasury, provisions, market, medals, and achievements provider is intentionally isolated in `lib/commander-hq-provider.ts` and still returns clearly labelled simulation data. Commander HQ Army data is live: its read-only wallet connection calls the existing `/api/verify-squadron` route, which keeps the Helius key server-side, filters the configured GAS collection, and applies the shared rank thresholds. No signing request, Privy account, or embedded wallet is used.
-
-Failed access attempts are limited to five per IP for ten minutes. The initial implementation keeps that state in server memory, which is suitable for local development and a single long-lived process but is not globally consistent across Vercel serverless instances. Before wider release, move the limiter to a shared store such as Vercel KV/Upstash Redis.
 
 ## GitHub and Vercel
 
 1. Commit the repository and push it to GitHub.
 2. Import the repository in Vercel.
-3. Add the API, collection, site URL, and Commander HQ variables from `.env.example` in project environment settings.
+3. Add the API, collection, site URL, Privy, and database variables from `.env.example` in project environment settings.
 4. Deploy. The default build command is `npm run build`.
 
 The default `dev`, `build`, and `start` scripts use Next.js for Vercel. The parallel `dev:sites`, `build:sites`, and `start:sites` scripts preserve the Sites-compatible Vite/vinext deployment path and `.openai/hosting.json`.
