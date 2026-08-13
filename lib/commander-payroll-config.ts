@@ -1,4 +1,4 @@
-import type { PayrollEpoch, PayrollSummary, WarChestSummary } from "./commander-payroll-types";
+import type { PayrollEpoch, PayrollSummary } from "./commander-payroll-types";
 
 export const MOCK_PAYROLL_EPOCH: PayrollEpoch = {
   id: "deployment-01",
@@ -18,9 +18,4 @@ export const MOCK_PAYROLL_SUMMARY: PayrollSummary = {
   activeSoldierMints: [],
   estimatedShareSol: 0,
   claimableSol: 0,
-};
-
-export const MOCK_WAR_CHEST: WarChestSummary = {
-  balanceGas: 0,
-  status: "test",
 };

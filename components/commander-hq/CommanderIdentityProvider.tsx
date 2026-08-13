@@ -12,6 +12,7 @@ import {
   type User,
 } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
+import { useSignTransaction, useWallets } from "@privy-io/react-auth/solana";
 import type { CommanderIdentity } from "@/lib/commander-hq-types";
 
 type IdentityOperation = "idle" | "login" | "connecting" | "linking" | "logout";
@@ -24,6 +25,7 @@ type CommanderIdentityContextValue = {
   operation: IdentityOperation;
   error: string;
   getAuthToken: () => Promise<string | null>;
+  signSolanaDevnetTransaction: (transaction: Uint8Array, address: string) => Promise<Uint8Array>;
   continueWithX: () => void;
   connectWallet: () => void;
   logout: () => Promise<void>;
@@ -37,6 +39,7 @@ const unconfiguredIdentity: CommanderIdentityContextValue = {
   operation: "idle",
   error: "PRIVY APP ID IS NOT CONFIGURED",
   getAuthToken: async () => null,
+  signSolanaDevnetTransaction: async () => { throw new Error("SOLANA WALLET IS NOT AVAILABLE"); },
   continueWithX: () => undefined,
   connectWallet: () => undefined,
   logout: async () => undefined,
@@ -76,6 +79,8 @@ function signatureToBase64(signature: Uint8Array) {
 
 function CommanderIdentityState({ children }: { children: ReactNode }) {
   const { ready, authenticated, user, logout: privyLogout, getAccessToken } = usePrivy();
+  const { wallets: solanaWallets } = useWallets();
+  const { signTransaction } = useSignTransaction();
   const [linkedUser, setLinkedUser] = useState<User | null>(null);
   const [operation, setOperation] = useState<IdentityOperation>("idle");
   const [error, setError] = useState("");
@@ -160,6 +165,18 @@ function CommanderIdentityState({ children }: { children: ReactNode }) {
     }
   }
 
+  async function signSolanaDevnetTransaction(transaction: Uint8Array, address: string) {
+    const wallet = solanaWallets.find((candidate) => candidate.address === address);
+    if (!wallet) throw new Error("CONNECTED SOLANA WALLET IS NOT AVAILABLE FOR SIGNING");
+    const result = await signTransaction({
+      transaction,
+      wallet,
+      chain: "solana:devnet",
+      options: { uiOptions: { description: "Transfer TEST $GAS to the Devnet GAS War Chest. No real value." } },
+    });
+    return result.signedTransaction;
+  }
+
   const identity = useMemo(() => toCommanderIdentity(linkedUser ?? user), [linkedUser, user]);
   const value: CommanderIdentityContextValue = {
     configured: true,
@@ -169,6 +186,7 @@ function CommanderIdentityState({ children }: { children: ReactNode }) {
     operation: oauthLoading ? "login" : operation,
     error,
     getAuthToken: getAccessToken,
+    signSolanaDevnetTransaction,
     continueWithX,
     connectWallet,
     logout,

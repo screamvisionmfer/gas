@@ -370,7 +370,7 @@ export function CommanderArmyController({ commander, identity, treasury, walletA
         featuredBusyMint={profileAction.startsWith("feature:") ? profileAction.slice(8) : ""}
         onSetFeatured={(mint) => void mutateProfile(`feature:${mint}`, "PATCH", { action: "set-featured", mint })}
       />
-      <PayrollSection key={wallet} soldiers={soldiers} armyStatus={status} walletConnected={Boolean(wallet)} />
+      <PayrollSection key={wallet} soldiers={soldiers} armyStatus={status} walletAddress={wallet} />
       <TreasurySection
         treasury={treasury}
         balance={balance}

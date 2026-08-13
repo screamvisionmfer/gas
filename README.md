@@ -97,6 +97,24 @@ The response is a real PNG produced by the server-side `sharp` renderer with the
 
 The profile, treasury, provisions, market, medals, and achievements provider is intentionally isolated in `lib/commander-hq-provider.ts` and still returns clearly labelled simulation data. Commander HQ Army data is live: its read-only wallet connection calls the existing `/api/verify-squadron` route, which keeps the Helius key server-side, filters the configured GAS collection, and applies the shared rank thresholds. No signing request, Privy account, or embedded wallet is used.
 
+### Commander Payroll Devnet test
+
+The Payroll transaction flow is an isolated UX test. Mainnet GAS NFTs continue to come from the existing Helius scan, while the only blockchain write is a user-approved transfer of a separate TEST $GAS SPL token on Solana Devnet. This is not the final payroll security model and does not prove production NFT eligibility.
+
+Configure `NEXT_PUBLIC_GAS_TEST_MODE=true`, a Devnet-only RPC in `NEXT_PUBLIC_GAS_TEST_RPC_URL`, the Devnet SPL mint in `NEXT_PUBLIC_GAS_TEST_TOKEN_MINT`, and the Devnet wallet that owns the War Chest ATA in `NEXT_PUBLIC_GAS_TEST_WAR_CHEST`. The client verifies the RPC genesis hash is Devnet before building or submitting a transaction.
+
+To create test assets with the Solana CLI, explicitly select Devnet, fund the local CLI wallet with Devnet SOL, then use the SPL Token CLI. These commands never expose or commit a private key:
+
+```bash
+solana config set --url devnet
+solana airdrop 2
+spl-token create-token
+spl-token create-account TEST_MINT_ADDRESS
+spl-token mint TEST_MINT_ADDRESS 1000000
+```
+
+Use any Devnet wallet address you control as `NEXT_PUBLIC_GAS_TEST_WAR_CHEST`. Its associated token account is created idempotently by the payer during the first confirmed test deployment. Never run these setup commands with a mainnet RPC.
+
 ## GitHub and Vercel
 
 1. Commit the repository and push it to GitHub.

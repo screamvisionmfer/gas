@@ -26,7 +26,21 @@ export type PayrollSummary = {
   claimableSol: number;
 };
 
-export type WarChestSummary = {
-  balanceGas: number;
-  status: "test";
+export type PayrollTransactionStatus = "idle" | "preparing" | "awaiting_signature" | "confirming" | "success" | "error";
+
+export type PayrollTestConfig = {
+  enabled: boolean;
+  configured: boolean;
+  rpcUrl: string;
+  tokenMint: string;
+  warChest: string;
+  explorerCluster: "devnet";
+  error?: string;
+};
+
+export type PayrollDeploymentReceipt = {
+  signature: string;
+  soldierMints: string[];
+  soldierCount: number;
+  amountGas: number;
 };
