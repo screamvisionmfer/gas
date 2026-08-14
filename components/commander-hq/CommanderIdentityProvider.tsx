@@ -172,7 +172,7 @@ function CommanderIdentityState({ children }: { children: ReactNode }) {
       transaction,
       wallet,
       chain: "solana:devnet",
-      options: { uiOptions: { description: "Transfer TEST $GAS to the Devnet GAS War Chest. No real value." } },
+      options: { uiOptions: { description: "Atomically deploy selected soldiers and transfer TEST $GAS on Devnet. No real value." } },
     });
     return result.signedTransaction;
   }

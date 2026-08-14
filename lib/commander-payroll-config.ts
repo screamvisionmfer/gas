@@ -10,7 +10,7 @@ export const MOCK_PAYROLL_EPOCH: PayrollEpoch = {
   deployedSoldierMints: [],
   deploymentCostSolPerSoldier: 0.001,
   gasRequiredPerSoldier: 100,
-  gasRequirementLabel: "TEST VALUE",
+  gasRequirementLabel: "READING DEVNET...",
   testMode: true,
 };
 

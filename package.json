@@ -13,7 +13,8 @@
     "build:sites": "vinext build",
     "start:sites": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "anchor:test": "anchor test"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -35,17 +36,23 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
+    "@coral-xyz/anchor": "^0.31.1",
     "@tailwindcss/postcss": "4.2.1",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "22.19.19",
     "@types/opentype.js": "^1.3.10",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
+    "chai": "^5.3.3",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
+    "mocha": "^11.8.0",
     "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "4.2.1",
+    "ts-mocha": "^11.1.0",
     "typescript": "5.9.3",
     "vinext": "0.0.50",
     "vite": "8.0.13",

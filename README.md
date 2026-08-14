@@ -115,6 +115,42 @@ spl-token mint TEST_MINT_ADDRESS 1000000
 
 Use any Devnet wallet address you control as `NEXT_PUBLIC_GAS_TEST_WAR_CHEST`. Its associated token account is created idempotently by the payer during the first confirmed test deployment. Never run these setup commands with a mainnet RPC.
 
+## Persistent Payroll deployment program (Devnet only)
+
+The Anchor program in `programs/gas-deployment` makes payment and deployment recording atomic. Its deployment PDA uses `deployment + epoch number + NFT mint`, preventing the same mint from deploying twice in one epoch while allowing it again in a later epoch. `payer_wallet` is historical metadata only, and the program never takes custody of an NFT.
+
+This is not production ownership security: GAS NFTs are verified by the existing mainnet Helius scanner while this program runs on Devnet. A Devnet program cannot cryptographically verify a mainnet NFT. The future mainnet version must validate current ownership on-chain.
+
+Install Rust, Solana CLI, Anchor CLI 0.31.1, Node.js 22, and SPL Token CLI. Build and test only with a local validator or Devnet:
+
+```bash
+anchor build
+anchor test
+solana config set --url devnet
+anchor deploy --provider.cluster devnet
+```
+
+After the first `anchor keys sync`, ensure the same program ID appears in `declare_id!`, `Anchor.toml`, and `NEXT_PUBLIC_GAS_DEPLOYMENT_PROGRAM_ID`, then rebuild. Never commit the generated program keypair.
+
+Initialize the test system with an Anchor client or `anchor shell` using the generated IDL:
+
+1. Call `initialize_config(testGasMint, warChestAuthority)` from the program authority wallet.
+2. Create the War Chest associated token account for that mint and authority.
+3. Call `initialize_epoch(1, startUnixTimestamp, endUnixTimestamp, rawTokenCost)`. Cost uses the mint's smallest units; for six decimals, 100 TEST $GAS is `100000000`.
+4. Configure these variables and rebuild the frontend:
+
+```env
+NEXT_PUBLIC_GAS_TEST_MODE=true
+NEXT_PUBLIC_GAS_TEST_RPC_URL=https://api.devnet.solana.com
+NEXT_PUBLIC_GAS_TEST_TOKEN_MINT=
+NEXT_PUBLIC_GAS_TEST_WAR_CHEST=
+NEXT_PUBLIC_GAS_DEPLOYMENT_PROGRAM_ID=
+```
+
+The frontend verifies the Devnet genesis hash, reads config/current epoch/deployment PDAs, and submits up to five `deploy_nft` instructions atomically per transaction. No Pump.fun integration, mainnet financial transaction, NFT staking, SOL payroll, or payroll claiming is implemented.
+
+If `NEXT_PUBLIC_GAS_DEPLOYMENT_PROGRAM_ID` is empty, Payroll automatically enters **LOCAL TEST MODE**. It performs no RPC calls and requests no wallet signature. Simulated deployments and the simulated War Chest balance are stored in browser `localStorage`, scoped to the linked wallet and local Epoch #1. Clearing browser site data resets them. Adding a valid program ID automatically restores the real Devnet/Anchor flow.
+
 ## GitHub and Vercel
 
 1. Commit the repository and push it to GitHub.

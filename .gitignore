@@ -44,5 +44,10 @@ next-env.d.ts
 /outputs/
 /work/
 /logo.png
+/target/
+/test-ledger/
+/programs/**/target/
+/programs/**/Cargo.lock
+/target/deploy/*.json
 
 .env*

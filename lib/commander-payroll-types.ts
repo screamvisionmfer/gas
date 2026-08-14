@@ -31,11 +31,27 @@ export type PayrollTransactionStatus = "idle" | "preparing" | "awaiting_signatur
 export type PayrollTestConfig = {
   enabled: boolean;
   configured: boolean;
+  localFallback: boolean;
   rpcUrl: string;
   tokenMint: string;
   warChest: string;
+  programId: string;
   explorerCluster: "devnet";
   error?: string;
+};
+
+export type OnChainPayrollEpoch = {
+  number: number;
+  startTimestamp: number;
+  endTimestamp: number;
+  deploymentCostGas: number;
+  totalDeployed: number;
+  status: "open" | "closed";
+};
+
+export type OnChainDeploymentState = {
+  epoch: OnChainPayrollEpoch | null;
+  deployedSoldierMints: string[];
 };
 
 export type PayrollDeploymentReceipt = {
@@ -43,4 +59,5 @@ export type PayrollDeploymentReceipt = {
   soldierMints: string[];
   soldierCount: number;
   amountGas: number;
+  epochNumber: number;
 };
