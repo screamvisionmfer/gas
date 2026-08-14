@@ -61,3 +61,30 @@ export type PayrollDeploymentReceipt = {
   amountGas: number;
   epochNumber: number;
 };
+
+export type LocalPayrollEpochHistory = {
+  epochNumber: number;
+  payrollPoolSol: number;
+  totalDeployedSoldiers: number;
+  walletDeployedSoldiers: number;
+  payrollPerSoldierSol: number;
+  entitlementSol: number;
+  claimed: boolean;
+  claimedAmountSol: number;
+  closedAt: number;
+};
+
+export type LocalPayrollSimulation = {
+  version: 2;
+  currentEpoch: number;
+  status: "open" | "closed";
+  payrollPoolSol: number;
+  totalDeployedSoldiers: number;
+  deployedSoldierMints: string[];
+  warChestGas: number;
+  finalEntitlementSol: number;
+  finalPayrollPerSoldierSol: number;
+  claimed: boolean;
+  claimedAmountSol: number;
+  history: LocalPayrollEpochHistory[];
+};

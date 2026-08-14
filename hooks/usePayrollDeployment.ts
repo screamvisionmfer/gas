@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCommanderIdentity } from "@/components/commander-hq/CommanderIdentityProvider";
-import { MOCK_PAYROLL_EPOCH } from "@/lib/commander-payroll-config";
+import {
+  claimLocalPayroll,
+  closeLocalEpoch,
+  createLocalPayrollSimulation,
+  deployLocalSoldiers,
+  normalizeLocalPayrollSimulation,
+  startNextLocalEpoch,
+  updateLocalEconomy,
+} from "@/lib/commander-payroll-local";
 import {
   broadcastAndConfirmProgramDeployment,
   fetchOnChainDeploymentState,
@@ -12,63 +20,67 @@ import {
   prepareProgramDeployment,
   serializeUnsignedTestTransaction,
 } from "@/lib/commander-payroll-solana";
-import type { OnChainDeploymentState, PayrollDeploymentReceipt, PayrollTransactionStatus } from "@/lib/commander-payroll-types";
+import type { LocalPayrollSimulation, OnChainDeploymentState, PayrollDeploymentReceipt, PayrollTransactionStatus } from "@/lib/commander-payroll-types";
 
 const EMPTY_CHAIN_STATE: OnChainDeploymentState = { epoch: null, deployedSoldierMints: [] };
-const LOCAL_EPOCH_NUMBER = 1;
-const LOCAL_STORAGE_PREFIX = "gas:payroll-local:v1";
+const LOCAL_STORAGE_PREFIX = "gas:payroll-local:v2";
 
-function localStorageKey(walletAddress: string) {
-  return `${LOCAL_STORAGE_PREFIX}:${walletAddress || "preview"}:epoch-${LOCAL_EPOCH_NUMBER}`;
-}
+function localStorageKey(walletAddress: string) { return `${LOCAL_STORAGE_PREFIX}:${walletAddress || "preview"}`; }
 
-function localEpoch(deployedSoldierMints: string[]): OnChainDeploymentState {
+function toLocalChainState(state: LocalPayrollSimulation): OnChainDeploymentState {
   const now = Math.floor(Date.now() / 1000);
   return {
     epoch: {
-      number: LOCAL_EPOCH_NUMBER,
+      number: state.currentEpoch,
       startTimestamp: now - 86_400,
       endTimestamp: now + (7 * 86_400),
-      deploymentCostGas: MOCK_PAYROLL_EPOCH.gasRequiredPerSoldier,
-      totalDeployed: deployedSoldierMints.length,
-      status: "open",
+      deploymentCostGas: 100,
+      totalDeployed: state.totalDeployedSoldiers,
+      status: state.status,
     },
-    deployedSoldierMints,
+    deployedSoldierMints: state.deployedSoldierMints,
   };
 }
 
-function readLocalDeployments(walletAddress: string) {
+function readLocalSimulation(walletAddress: string) {
   try {
     const value = window.localStorage.getItem(localStorageKey(walletAddress));
-    const parsed = value ? JSON.parse(value) : [];
-    return Array.isArray(parsed) ? parsed.filter((mint): mint is string => typeof mint === "string") : [];
-  } catch { return []; }
+    return normalizeLocalPayrollSimulation(value ? JSON.parse(value) : null);
+  } catch { return createLocalPayrollSimulation(); }
 }
 
-function writeLocalDeployments(walletAddress: string, mints: string[]) {
-  window.localStorage.setItem(localStorageKey(walletAddress), JSON.stringify(mints));
+function writeLocalSimulation(walletAddress: string, state: LocalPayrollSimulation) {
+  window.localStorage.setItem(localStorageKey(walletAddress), JSON.stringify(state));
 }
 
-function localDelay(milliseconds: number) {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
-}
+function localDelay(milliseconds: number) { return new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds)); }
 
 export function usePayrollDeployment(walletAddress: string, soldierMints: string[]) {
   const config = useMemo(() => payrollTestConfig(), []);
+  const initialLocal = useMemo(() => createLocalPayrollSimulation(), []);
   const mintKey = soldierMints.join(",");
   const { signSolanaDevnetTransaction } = useCommanderIdentity();
   const [status, setStatus] = useState<PayrollTransactionStatus>("idle");
   const [error, setError] = useState("");
   const [receipt, setReceipt] = useState<PayrollDeploymentReceipt | null>(null);
-  const [chainState, setChainState] = useState<OnChainDeploymentState>(config.localFallback ? localEpoch([]) : EMPTY_CHAIN_STATE);
+  const [localSimulation, setLocalSimulation] = useState<LocalPayrollSimulation>(initialLocal);
+  const [chainState, setChainState] = useState<OnChainDeploymentState>(config.localFallback ? toLocalChainState(initialLocal) : EMPTY_CHAIN_STATE);
   const [chainLoading, setChainLoading] = useState(false);
   const [warChestBalance, setWarChestBalance] = useState<number | null>(config.localFallback ? 0 : null);
   const [balanceLoading, setBalanceLoading] = useState(false);
 
+  const applyLocalSimulation = useCallback((next: LocalPayrollSimulation) => {
+    writeLocalSimulation(walletAddress, next);
+    setLocalSimulation(next);
+    setChainState(toLocalChainState(next));
+    setWarChestBalance(next.warChestGas);
+    setError("");
+    return next;
+  }, [walletAddress]);
+
   const refreshChainState = useCallback(async () => {
     if (config.localFallback) {
-      setChainState(localEpoch(readLocalDeployments(walletAddress)));
-      setError("");
+      applyLocalSimulation(readLocalSimulation(walletAddress));
       return;
     }
     if (!config.configured) return;
@@ -80,11 +92,11 @@ export function usePayrollDeployment(walletAddress: string, soldierMints: string
       setError(payrollTransactionError(chainError));
       setChainState(EMPTY_CHAIN_STATE);
     } finally { setChainLoading(false); }
-  }, [config, mintKey, status, walletAddress]);
+  }, [applyLocalSimulation, config, mintKey, status, walletAddress]);
 
   const refreshWarChest = useCallback(async () => {
     if (config.localFallback) {
-      setWarChestBalance(readLocalDeployments(walletAddress).length * MOCK_PAYROLL_EPOCH.gasRequiredPerSoldier);
+      setWarChestBalance(readLocalSimulation(walletAddress).warChestGas);
       return;
     }
     if (!config.configured) return;
@@ -103,29 +115,22 @@ export function usePayrollDeployment(walletAddress: string, soldierMints: string
     if (!config.configured || !walletAddress || !selectedMints.length) return null;
     setError("");
     setReceipt(null);
-
     if (config.localFallback) {
       setStatus("preparing");
       await localDelay(350);
       setStatus("confirming");
       await localDelay(550);
-      const current = readLocalDeployments(walletAddress);
-      const deployed = Array.from(new Set([...current, ...selectedMints]));
-      writeLocalDeployments(walletAddress, deployed);
-      setChainState(localEpoch(deployed));
-      setWarChestBalance(deployed.length * MOCK_PAYROLL_EPOCH.gasRequiredPerSoldier);
+      const current = readLocalSimulation(walletAddress);
+      const next = applyLocalSimulation(deployLocalSoldiers(current, selectedMints));
       const confirmed: PayrollDeploymentReceipt = {
         signature: `LOCAL-${Date.now().toString(36).toUpperCase()}`,
-        soldierMints: [...selectedMints],
-        soldierCount: selectedMints.length,
-        amountGas: selectedMints.length * MOCK_PAYROLL_EPOCH.gasRequiredPerSoldier,
-        epochNumber: LOCAL_EPOCH_NUMBER,
+        soldierMints: [...selectedMints], soldierCount: selectedMints.length,
+        amountGas: next.warChestGas - current.warChestGas, epochNumber: next.currentEpoch,
       };
       setReceipt(confirmed);
       setStatus("success");
       return confirmed;
     }
-
     try {
       setStatus("preparing");
       const prepared = await prepareProgramDeployment(config, walletAddress, selectedMints);
@@ -144,11 +149,38 @@ export function usePayrollDeployment(walletAddress: string, soldierMints: string
       void refreshChainState();
       return null;
     }
-  }, [config, refreshChainState, refreshWarChest, signSolanaDevnetTransaction, walletAddress]);
+  }, [applyLocalSimulation, config, refreshChainState, refreshWarChest, signSolanaDevnetTransaction, walletAddress]);
+
+  const updateLocalSimulation = useCallback((poolSol: number, totalDeployed: number) => {
+    if (config.localFallback) applyLocalSimulation(updateLocalEconomy(readLocalSimulation(walletAddress), poolSol, totalDeployed));
+  }, [applyLocalSimulation, config.localFallback, walletAddress]);
+
+  const closeLocalSimulation = useCallback(() => {
+    if (config.localFallback) applyLocalSimulation(closeLocalEpoch(readLocalSimulation(walletAddress)));
+  }, [applyLocalSimulation, config.localFallback, walletAddress]);
+
+  const claimLocalSimulation = useCallback(async () => {
+    if (!config.localFallback) return 0;
+    const current = readLocalSimulation(walletAddress);
+    if (current.status !== "closed" || current.claimed) return 0;
+    setReceipt(null);
+    setStatus("confirming");
+    await localDelay(450);
+    const next = applyLocalSimulation(claimLocalPayroll(current));
+    setStatus("success");
+    return next.claimedAmountSol;
+  }, [applyLocalSimulation, config.localFallback, walletAddress]);
+
+  const startNextLocalSimulation = useCallback(() => {
+    if (!config.localFallback) return;
+    applyLocalSimulation(startNextLocalEpoch(readLocalSimulation(walletAddress)));
+    setReceipt(null);
+    setStatus("idle");
+  }, [applyLocalSimulation, config.localFallback, walletAddress]);
 
   return {
-    config, status, error, receipt, chainState, chainLoading, warChestBalance, balanceLoading,
+    config, status, error, receipt, chainState, chainLoading, warChestBalance, balanceLoading, localSimulation,
     busy: ["preparing", "awaiting_signature", "confirming"].includes(status),
-    deploy, refreshChainState, refreshWarChest,
+    deploy, refreshChainState, refreshWarChest, updateLocalSimulation, closeLocalSimulation, claimLocalSimulation, startNextLocalSimulation,
   };
 }
